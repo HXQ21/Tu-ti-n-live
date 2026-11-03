@@ -1,0 +1,295 @@
+{
+  "tiktok": { "username": "", "signApiKey": "", "reconnectSec": 10 },
+  "server": { "host": "127.0.0.1", "port": 3000, "autosaveSec": 30 },
+
+  "presence": { "activeMin": 15, "hallColumns": 6, "hallRows": 5 },
+  "session": {
+    "reconnectGraceMin": 30,
+    "endRewards": [1000, 600, 400, 300, 250, 200, 150, 120, 100, 80],
+    "firstTitle": "Thiên Kiêu Đệ Nhất"
+  },
+
+  "keywords": {
+    "join": ["tu luyện"],
+    "attack": ["đánh"],
+    "pickUp": ["nhặt"],
+    "lookup": ["check", "linh căn", "tu vi"],
+    "breakShield": ["phá trận"],
+    "brewPill": ["luyện đan"],
+    "factions": { "kiem": ["kiếm"], "dan": ["đan"], "tran": ["trận"] }
+  },
+
+  "elements": {
+    "kim":   { "name": "Kim",  "color": "#FFD54A" },
+    "moc":   { "name": "Mộc",  "color": "#4CD964" },
+    "thuy":  { "name": "Thủy", "color": "#3FA9FF" },
+    "hoa":   { "name": "Hỏa",  "color": "#FF4D3D" },
+    "tho":   { "name": "Thổ",  "color": "#A9743F" },
+    "loi":   { "name": "Lôi",  "color": "#A66BFF", "base": "kim" },
+    "bang":  { "name": "Băng", "color": "#CFF4FF", "base": "thuy" },
+    "phong": { "name": "Phong","color": "#2FD6B5", "base": "moc" },
+    "thien": { "name": "Thiên","color": "rainbow" }
+  },
+  "counters": { "kim": "moc", "moc": "tho", "tho": "thuy", "thuy": "hoa", "hoa": "kim" },
+  "roots": [
+    { "id": "tap",    "name": "Tạp linh căn",     "weight": 40,  "count": [4, 5], "mult": 0.8 },
+    { "id": "tam",    "name": "Tam linh căn",     "weight": 30,  "count": [3, 3], "mult": 1.0 },
+    { "id": "song",   "name": "Song linh căn",    "weight": 18,  "count": [2, 2], "mult": 1.3 },
+    { "id": "don",    "name": "Đơn linh căn",     "weight": 9,   "count": [1, 1], "mult": 1.8 },
+    { "id": "biendi", "name": "Biến dị linh căn", "weight": 2.5, "count": [1, 1], "mult": 2.5 },
+    { "id": "thien",  "name": "Thiên linh căn",   "weight": 0.5, "count": [0, 0], "mult": 4 }
+  ],
+
+  "cultivation": {
+    "chatPoints": 1, "chatCooldownSec": 10,
+    "likesPerReward": 100, "likeReward": 10,
+    "sharePoints": 40, "shareMaxPerSession": 5,
+    "pointsPerDiamond": 10
+  },
+  "checkin": { "base": 10, "perDay": 2, "max": 30 },
+  "tide": { "likesPerMilestone": 1000, "durationSec": 45, "maxSec": 180, "mult": 2 },
+
+  "realms": [
+    { "name": "Phàm Nhân",  "min": 0 },
+    { "name": "Luyện Khí",  "min": 100 },
+    { "name": "Trúc Cơ",    "min": 1000 },
+    { "name": "Kim Đan",    "min": 10000 },
+    { "name": "Nguyên Anh", "min": 100000 },
+    { "name": "Hóa Thần",   "min": 1000000 },
+    { "name": "Luyện Hư",   "min": 3000000 },
+    { "name": "Đại Thừa",   "min": 10000000 },
+    { "name": "Chân Tiên",  "min": 30000000 }
+  ],
+  "tiersPerRealm": 9,
+  "bigBreakthroughFrom": "Kim Đan",
+  "ranks": { "outerLikes": 100, "innerDiamonds": 100 },
+
+  "factions": {
+    "changeCooldownMin": 30,
+    "kiem": { "name": "Kiếm", "elements": ["kim", "loi"], "bossDamageMult": 1.2 },
+    "dan":  { "name": "Đan",  "elements": ["moc", "hoa", "phong"], "rainMult": 1.2 },
+    "tran": { "name": "Trận", "elements": ["tho", "thuy", "bang"], "chatLikeMult": 1.2 }
+  },
+
+  "gifts": {
+    "comboTimeoutSec": 30,
+    "bigGiftDiamonds": 1000,
+    "washMarrow": { "giftIds": [5879], "diamondCount": 30 },
+    "mutation":   { "giftIds": [6369], "diamondCount": 29999, "chance": 0.1 },
+    "vault": [
+      { "name": "Hoa hồng", "diamonds": 1,     "effect": "+10 tu vi" },
+      { "name": "Tim tay",  "diamonds": 5,     "effect": "+50 tu vi" },
+      { "name": "Donut",    "diamonds": 30,    "effect": "Tẩy Tủy: bỏ 1 hệ phụ" },
+      { "name": "Corgi",    "diamonds": 299,   "effect": "+2.990 tu vi" },
+      { "name": "Sư tử",    "diamonds": 29999, "effect": "10% biến dị linh căn" }
+    ]
+  },
+
+  "quests": {
+    "list": [
+      { "id": "likes", "name": "Thả 100 tim", "need": 100 },
+      { "id": "chats", "name": "Bình luận 5 lần", "need": 5 },
+      { "id": "event", "name": "Tham gia 1 sự kiện", "need": 1 }
+    ],
+    "chestReward": 100,
+    "chestShowSec": 3
+  },
+
+  "schedule": {
+    "cycleMin": 20,
+    "slots": [
+      { "min": 0,  "type": "boss" },
+      { "min": 8,  "type": "rain" },
+      { "min": 12, "type": "slot12" },
+      { "min": 16, "type": "rain" }
+    ],
+    "gapSec": 30,
+    "maxLateMin": 3,
+    "upcoming": 4
+  },
+
+  "rain": { "durationSec": 30, "rewardMin": 20, "rewardMax": 100, "fastCount": 10, "fastMult": 2 },
+
+  "boss": {
+    "countdownSec": 60, "durationMin": 5,
+    "baseHp": 5000, "hpPerPlayer": 500,
+    "enrage": { "start": 1.0, "step": 0.2, "max": 2.0 },
+    "damage": {
+      "attack": 10, "attackCooldownSec": 3,
+      "perLike": 1, "share": 200, "perDiamond": 20,
+      "shareMaxPerFight": 5, "clampAtPhase": true
+    },
+    "mults": { "strong": 2, "weak": 0.5, "neutral": 1, "heaven": 1.5, "realmStep": 0.1, "shield": 0.3 },
+    "shield": { "triggerPct": 50, "perPlayer": 2, "min": 5, "max": 20, "cooldownSec": 3, "timeoutSec": 45 },
+    "frenzy": { "triggerPct": 20, "intervalSec": 15, "idleSec": 30, "drainPct": 1, "drainMax": 50 },
+    "pill": { "perPlayer": 2, "min": 3, "max": 10, "cooldownSec": 3, "protectSec": 20 },
+    "rewards": {
+      "participation": 50, "top": [500, 300, 200], "awardSec": 8,
+      "luckyPills": 3, "pillFallback": 200,
+      "topTitle": "Đồ Ma Giả", "topTitleDays": 7,
+      "lastHitTitle": "Trảm Yêu"
+    },
+    "boardSize": 5
+  },
+
+  "seats": {
+    "reviewSec": 10,
+    "session": ["Chưởng Môn", "Phó Chưởng Môn", "Đại Trưởng Lão", "Trưởng Lão", "Thánh Tử"],
+    "elders": ["Lão Tổ", "Thái Thượng Trưởng Lão"]
+  },
+  "leaderboard": { "size": 10, "refreshMs": 1000 },
+  "panels": { "rotateSec": 15 },
+  "lookup": { "cooldownSec": 30, "cardSec": 6, "maxQueue": 5 },
+
+  "notifications": {
+    "bigSec": 3, "maxQueue": 10,
+    "priority": ["heavenRoot", "bossDown", "beast", "elder", "master", "breakthrough", "bigGift", "artifact", "tide"]
+  },
+  "feed": { "lines": 5, "mergeSec": 3, "floodPerSec": 3, "summarySec": 10 },
+  "display": { "damageMergeMs": 1000, "nameMaxChars": 12, "gainMinShow": 10, "gainMergeSec": 2 },
+  "audio": {
+    "bellMinGapSec": 2,
+    "volumes": { "bell": 0.5, "thunder": 0.8, "drum": 0.8, "bgm": 0.3, "voice": 1.0 },
+    "voiceMaxQueue": 3,
+    "voice": {
+      "sessionStart": ["session_open"],
+      "sessionEnd": ["session_close"],
+      "bossCountdown": ["boss_countdown_{element}"],
+      "bossStart": ["boss_start"],
+      "boss60s": ["boss_60s"],
+      "boss30s": ["boss_30s"],
+      "bossRage": ["boss_rage"],
+      "bossShield": ["boss_shield"],
+      "bossShieldBreak": ["boss_shield_break"],
+      "bossKilled": ["boss_defeated", "boss_defeated_b", "name_lasthit_fixed"],
+      "bossFled": ["boss_escape"],
+      "rain": ["spirit_rain", "spirit_rain_b"],
+      "tideStart": ["qi_tide_start", "qi_tide_start_b"],
+      "tideEnd": ["qi_tide_end"],
+      "heavenRoot": ["heaven_root", "heaven_root_b", "name_heavenroot_fixed"],
+      "bigGift": ["name_gift_fixed"],
+      "master": ["throne_master", "name_master_fixed"],
+      "masterSteal": ["kieu_top"],
+      "elder0": ["throne_supreme"],
+      "elder1": ["throne_elder"],
+      "breakthrough": {
+        "Kim Đan": ["breakthrough_kimdan", "breakthrough_kimdan_b"],
+        "Nguyên Anh": ["breakthrough_nguyenanh", "breakthrough_nguyenanh_b"],
+        "Hóa Thần": ["breakthrough_hoathan"],
+        "Luyện Hư": ["breakthrough_luyenhu"],
+        "Đại Thừa": ["breakthrough_daithua"],
+        "Chân Tiên": ["breakthrough_chantien"]
+      }
+    }
+  },
+
+  "modules": {
+    "vault": true, "events": true, "tribulation": true, "debate": true, "artifact": true,
+    "beast": true, "wings": true, "duel": true, "alchemy": true, "ladder": true, "secret": true, "dao": true, "drops": true
+  },
+
+  "vault": {
+    "tiers": [
+      { "id": "linhThach",   "min": 1,     "max": 4,     "name": "Linh Thạch",       "effect": "không có tác dụng thêm" },
+      { "id": "tuKhi",       "min": 5,     "max": 9,     "name": "Tụ Khí Đan",       "effect": "60 giây tu vi chat/tim x1.2" },
+      { "id": "luyenKhiPhu", "min": 10,    "max": 29,    "name": "Luyện Khí Phù",    "effect": "+1 lượt luyện pháp bảo" },
+      { "id": "tayTuy",      "min": 30,    "max": 98,    "name": "Tẩy Tủy Đan",      "effect": "bỏ 1 hệ phụ" },
+      { "id": "hoPhap",      "min": 99,    "max": 999,   "name": "Hộ Pháp Kim Quan", "effect": "+1 lượt luyện · +10% độ kiếp" },
+      { "id": "thienDuc",    "min": 1000,  "max": 29998, "name": "Thiên Dực Lệnh",   "effect": "+1 cấp thiên dực" },
+      { "id": "thienMenh",   "min": 29999, "max": null,  "name": "Thiên Mệnh Châu",  "effect": "+1 cấp thiên dực · 10% biến dị" }
+    ],
+    "tuKhiSec": 60, "tuKhiMult": 1.2, "mutationChance": 0.1
+  },
+
+  "events": { "rotation": ["debate", "alchemy", "ladder", "secret"], "joinKeywords": true },
+
+  "tribulation": {
+    "keywords": ["độ kiếp"], "helpKeywords": ["hộ pháp"],
+    "durationSec": 30, "base": 60, "heaven": 10,
+    "perHelper": 1, "helperMax": 20, "likesPerPct": 100, "likesMax": 10,
+    "hoPhapPct": 10, "bigGiftPct": 15, "hoPhapMin": 99, "bigGiftMin": 1000, "max": 95,
+    "failLossPct": 10, "restMin": 8, "queueMax": 5, "helperReward": 20, "cardDelayMaxSec": 30
+  },
+
+  "debate": { "file": "questions.json", "answerSec": 20, "awardSec": 5, "correct": 30, "fastest": [100, 60, 40] },
+
+  "artifact": {
+    "list": ["Thanh Vân Kiếm", "Huyền Băng Kính", "Tử Linh Hồ Lô", "Cửu Tiêu Ấn", "Lưu Ly Tháp", "Bích Hải Châu", "Thanh Phong Phiến", "Xích Diễm Linh"],
+    "grades": ["Phàm khí", "Linh khí", "Bảo khí", "Tiên khí"],
+    "need": [3, 10, 50],
+    "mults": [1, 1.1, 1.25, 1.5],
+    "chestRefines": 1
+  },
+
+  "beast": {
+    "list": [
+      { "id": "ngoc_tho",  "name": "Ngọc Thố",  "tier": "pham", "image": "beast_1" },
+      { "id": "huyen_quy", "name": "Huyền Quy", "tier": "pham", "image": "beast_2" },
+      { "id": "bang_ho",   "name": "Băng Hồ",   "tier": "linh", "image": "beast_3" },
+      { "id": "loi_ung",   "name": "Lôi Ưng",   "tier": "linh", "image": "beast_4" },
+      { "id": "thanh_loan","name": "Thanh Loan","tier": "linh", "image": "beast_5" },
+      { "id": "hoa_lan",   "name": "Hỏa Lân",   "tier": "than", "image": "beast_6" },
+      { "id": "cuu_vi_ho", "name": "Cửu Vĩ Hồ", "tier": "than", "image": "beast_7" }
+    ],
+    "tiers": {
+      "pham": { "name": "Phàm thú", "perLevel": 0.02, "rank": 0 },
+      "linh": { "name": "Linh thú", "perLevel": 0.03, "rank": 1 },
+      "than": { "name": "Thần thú", "perLevel": 0.04, "rank": 2 }
+    },
+    "maxLevel": 10, "expPerLevel": 100, "likesPerExp": 200, "chestExp": 16, "duplicateExp": 50,
+    "switchKeywords": ["xuất chiến"], "switchCooldownSec": 60, "hallMinLevel": 5
+  },
+
+  "wings": { "maxLevel": 5, "perLevel": 0.05, "lastHitChance": 0.2 },
+
+  "duel": {
+    "keywords": ["khiêu chiến"], "supportKeywords": ["ủng hộ"],
+    "minRealm": "Kim Đan", "maxRealmGap": 1, "waitSec": 60, "durationSec": 30, "cooldownMin": 5,
+    "basePower": 1000, "attackPoints": 20, "attackCooldownSec": 2, "perLike": 1, "perDiamond": 20,
+    "supportPoints": 5, "supportCooldownSec": 5,
+    "winReward": 100, "winStealPct": 1, "winStealMax": 500, "loseReward": 20, "drawReward": 50, "drawPct": 1
+  },
+
+  "alchemy": {
+    "keywords": ["thêm lửa"], "durationSec": 60, "start": 30, "decayPerSec": 3,
+    "firePoints": 5, "fireCooldownSec": 2, "likesPerPoint": 10, "perDiamond": 1,
+    "safeMin": 40, "safeMax": 70, "dangerAbove": 85, "explodeSec": 3, "needStableSec": 35,
+    "successReward": 60, "danMult": 1.5, "failReward": 10
+  },
+
+  "ladder": {
+    "keywords": ["leo"], "durationSec": 90, "climbCooldownSec": 2, "likesPerStep": 10, "perDiamond": 1,
+    "top": [300, 200, 100], "participation": 20, "show": 5
+  },
+
+  "secret": {
+    "keywords": ["bí cảnh"], "openSec": 60, "minRealm": "Trúc Cơ",
+    "rewards": [
+      { "id": "cultivation", "weight": 60, "min": 50, "max": 150 },
+      { "id": "beastExp",    "weight": 20, "amount": 20 },
+      { "id": "refine",      "weight": 10, "amount": 1 },
+      { "id": "egg",         "weight": 7 },
+      { "id": "wash",        "weight": 3, "fallback": 200 }
+    ]
+  },
+
+  "dao": {
+    "keywords": { "chinh": ["chính đạo"], "ma": ["ma đạo"] },
+    "names": { "chinh": "Chính Đạo", "ma": "Ma Đạo" },
+    "changeCooldownMin": 30, "windowMin": 30, "mult": 1.1
+  },
+
+  "drops": {
+    "commonEggDailyMax": 3, "overflowExp": 30, "hatchSec": 3,
+    "commonEgg": { "linh": 0.2 }, "rareEgg": { "than": 0.3 },
+    "boss": {
+      "gold": { "rareEggs": 1, "refines": 2 },
+      "silver": { "eggChance": 0.3, "refines": 1 },
+      "bronze": { "refines": 1, "beastExp": 30 },
+      "participantEggChance": 0.05
+    },
+    "rainFastEggChance": 0.02,
+    "chestEggChance": 0.1,
+    "debateFastestRefines": 1
+  }
+}

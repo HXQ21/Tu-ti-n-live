@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quản trị - Tiên Môn Vấn Đạo</title>
+<link rel="icon" href="data:,">
+<style>
+  :root { --bg: #10151f; --panel: #1a2230; --line: #2d3a4f; --text: #e8edf5; --muted: #93a1b5; --gold: #e6c469; --ok: #4cd964; --bad: #ff5b4d; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 "Segoe UI", system-ui, sans-serif; }
+  header { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  h1 { margin: 0; font-size: 18px; color: var(--gold); }
+  h2 { margin: 0 0 10px; font-size: 14px; color: var(--gold); }
+  .status { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
+  .dot.ok { background: var(--ok); }
+  .dot.bad { background: var(--bad); }
+  main { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; padding: 12px 16px; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+  .wide { grid-column: 1 / -1; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+  input[type=text], input[type=number] { background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font: inherit; min-width: 0; }
+  input[type=text] { flex: 1; }
+  input[type=number] { width: 90px; }
+  button { background: #27354b; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 7px 11px; font: inherit; cursor: pointer; }
+  button:hover { border-color: var(--gold); }
+  button.big { background: #4a3a14; border-color: var(--gold); }
+  label { color: var(--muted); }
+  #log { height: 280px; overflow-y: auto; background: var(--bg); border-radius: 6px; padding: 8px; font: 13px/1.5 Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+  #state { background: var(--bg); border-radius: 6px; padding: 8px; margin: 0; font: 13px/1.5 Consolas, monospace; overflow-x: auto; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Bảng quản trị &amp; giả lập</h1>
+  <span class="status"><span class="dot" id="sessDot"></span><span id="sessText">Phiên: chưa rõ</span></span>
+  <span class="status"><span class="dot" id="wsDot"></span><span id="wsText">Đang kết nối máy chủ…</span></span>
+  <span class="status"><span class="dot" id="ttDot"></span><span id="ttText">TikTok: chưa rõ</span></span>
+</header>
+
+<main>
+  <section>
+    <h2>Người chơi</h2>
+    <div class="row"><input type="text" id="name" value="Đạo hữu A" aria-label="Tên người chơi"></div>
+    <h2>Chat</h2>
+    <div class="row">
+      <input type="text" id="text" placeholder="Nội dung chat" aria-label="Nội dung chat">
+      <button id="sendChat">Gửi</button>
+    </div>
+    <div class="row muted-row">
+      <label>Gợi ý: gõ "xuất chiến Băng Hồ" hoặc "ủng hộ [tên]" vào ô chat rồi bấm Gửi.</label>
+    </div>
+    <div class="row" id="keywords"></div>
+  </section>
+
+  <section>
+    <h2>Thả tim, chia sẻ, theo dõi</h2>
+    <div class="row">
+      <input type="number" id="likes" value="100" min="1" aria-label="Số tim">
+      <button id="sendLike">Thả tim</button>
+    </div>
+    <div class="row">
+      <button id="sendShare">Chia sẻ</button>
+      <button id="sendFollow">Theo dõi</button>
+    </div>
+    <h2>Tặng quà</h2>
+    <div class="row">
+      <label for="giftCount">Số lượng</label>
+      <input type="number" id="giftCount" value="1" min="1">
+      <label><input type="checkbox" id="giftCombo"> Combo</label>
+    </div>
+    <div class="row" id="gifts"></div>
+    <div class="row">
+      <label for="giftCoins">Quà tùy chọn</label>
+      <input type="number" id="giftCoins" value="99" min="1"> <label>xu</label>
+      <button id="sendGift">Tặng</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Phiên live</h2>
+    <div class="row">
+      <button class="big" data-action="startSession">Bắt đầu phiên</button>
+      <button class="big" data-action="endSession">Kết thúc phiên</button>
+      <label><input type="checkbox" id="pause"> Tạm dừng sự kiện</label>
+    </div>
+    <h2>Sự kiện (đi qua Lịch Thiên Đạo)</h2>
+    <div class="row">
+      <button class="big" data-action="boss">Gọi boss ngay</button>
+      <button class="big" data-action="rain">Gọi Mưa Linh Thạch ngay</button>
+      <button class="big" data-action="debate">Gọi Luận Đạo ngay</button>
+      <button class="big" data-action="alchemy">Gọi Luyện Đan ngay</button>
+      <button class="big" data-action="ladder">Gọi Đăng Thiên Thê ngay</button>
+      <button class="big" data-action="secret">Gọi Bí Cảnh ngay</button>
+    </div>
+    <div class="row">
+      <button data-action="bots">Thêm 50 người chơi ảo</button>
+      <button data-action="newDay">Chuyển sang ngày mới</button>
+      <button data-action="newWeek">Chuyển sang tuần mới</button>
+    </div>
+    <h2>Âm thanh trên giao diện</h2>
+    <div class="row">
+      <label><input type="checkbox" data-audio="bell" checked> Chuông</label>
+      <label><input type="checkbox" data-audio="thunder" checked> Sấm</label>
+      <label><input type="checkbox" data-audio="drum" checked> Trống</label>
+      <label><input type="checkbox" data-audio="bgm" checked> Nhạc nền</label>
+      <label><input type="checkbox" data-audio="voice" checked> Giọng đọc</label>
+    </div>
+    <div class="row">
+      <button data-test="bell">Thử chuông</button>
+      <button data-test="thunder">Thử sấm</button>
+      <button data-test="drum">Thử trống</button>
+      <button data-test="voice">Thử giọng đọc</button>
+    </div>
+    <div class="row"><label id="bgmNote"></label></div>
+    <h2>Trạng thái</h2>
+    <pre id="state">Chưa có dữ liệu</pre>
+  </section>
+
+  <section class="wide">
+    <h2>Nhật ký sự kiện</h2>
+    <div id="log" role="log"></div>
+  </section>
+</main>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const MAX_LOG_LINES = 300;
+
+  function addLog(text) {
+    const log = $('log');
+    const line = document.createElement('div');
+    line.textContent = `${new Date().toLocaleTimeString('vi-VN')}  ${text}`;
+    log.append(line);
+    while (log.childElementCount > MAX_LOG_LINES) log.firstElementChild.remove();
+    log.scrollTop = log.scrollHeight;
+  }
+
+  async function sim(action, extra = {}) {
+    try {
+      const res = await fetch('/api/sim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, name: $('name').value, ...extra }),
+      });
+      if (!res.ok) addLog(`LỖI ${action}: ${await res.text()}`);
+    } catch (err) {
+      addLog(`LỖI ${action}: không gọi được máy chủ (${err.message})`);
+    }
+  }
+
+  function button(label, onClick) {
+    const el = document.createElement('button');
+    el.textContent = label;
+    el.addEventListener('click', onClick);
+    return el;
+  }
+
+  function buildControls(config) {
+    const { join, attack, pickUp, lookup, breakShield, brewPill, factions } = config.keywords;
+    const words = [join, attack, pickUp, lookup, breakShield, brewPill, ...Object.values(factions)].map((list) => list[0]);
+    if (config.modules?.tribulation) words.push(config.tribulation.keywords[0], config.tribulation.helpKeywords[0]);
+    if (config.modules?.debate) words.push('1', '2', '3');
+    const m = config.modules ?? {};
+    if (m.duel) words.push(config.duel.keywords[0], `${config.duel.supportKeywords[0]} ${$('name').value}`);
+    if (m.alchemy) words.push(config.alchemy.keywords[0]);
+    if (m.ladder) words.push(config.ladder.keywords[0]);
+    if (m.secret) words.push(config.secret.keywords[0]);
+    if (m.dao) words.push(config.dao.keywords.ma[0], config.dao.keywords.chinh[0]);
+    $('keywords').replaceChildren(...words.map((word) => button(word, () => sim('chat', { text: word }))));
+    $('gifts').replaceChildren(...config.gifts.vault.map((gift) =>
+      button(`${gift.name} (${gift.diamonds.toLocaleString('vi-VN')} xu)`, () => sim('gift', {
+        diamonds: gift.diamonds,
+        count: $('giftCount').value,
+        combo: $('giftCombo').checked,
+      })),
+    ));
+  }
+
+  function describe({ type, user, text, count, giftName, diamonds, combo, repeatCount, repeatEnd }) {
+    switch (type) {
+      case 'chat': return `${user.name} chat: ${text}`;
+      case 'like': return `${user.name} thả ${count} tim`;
+      case 'gift': return `${user.name} tặng ${giftName} (${diamonds} xu) x${repeatCount}${combo ? (repeatEnd ? ' [kết thúc combo]' : ' [đang combo]') : ''}`;
+      case 'share': return `${user.name} chia sẻ`;
+      case 'follow': return `${user.name} theo dõi`;
+      default: return JSON.stringify({ type });
+    }
+  }
+
+  function showState(s) {
+    $('sessDot').className = `dot ${s.session.active ? 'ok' : ''}`;
+    $('sessText').textContent = s.session.active ? `Phiên #${s.session.seq} đang chạy` : 'Chưa có phiên (bấm Bắt đầu phiên)';
+    $('pause').checked = s.schedule.paused;
+    const now = s.now;
+    const brief = {
+      'có mặt / tổng': `${s.presentPlayers} / ${s.totalPlayers}`,
+      'điện': `${s.hall.seats.filter(Boolean).length} ghế · chờ ${s.hall.waiting} · bế quan ${s.hall.closed}`,
+      'sắp tới': s.schedule.upcoming.map((u) => `${u.label} ${u.at === null ? 'chờ' : Math.max(Math.ceil((u.at - now) / 1000), 0) + 's'}`),
+      'đang chạy': s.schedule.running,
+      boss: s.boss && { phase: s.boss.phase, hp: s.boss.hp, maxHp: s.boss.maxHp, shield: Boolean(s.boss.shield), frenzy: s.boss.frenzy },
+      'cường hóa': s.enrage,
+      'linh khí triều': s.tide.active ? `còn ${Math.ceil((s.tide.until - now) / 1000)}s` : `${s.room.likes}/${s.room.next} tim`,
+      'lão tổ': s.elders.map((e) => e.player ? `${e.seat}: ${e.player.name}` : `${e.seat}: trống`),
+      'ghế phiên': s.seats.map((e) => `${e.seat}: ${e.player?.name ?? 'trống'}`),
+      'thiên kiêu': s.boards.session.slice(0, 5).map((p) => `${p.name} ${p.points.toLocaleString('vi-VN')}`),
+      'thông báo': s.notification?.text ?? null,
+      'thẻ check': s.card?.name ?? null,
+    };
+    $('state').textContent = JSON.stringify(brief, null, 2);
+  }
+
+  function showAudio({ audio, hasBgm }) {
+    document.querySelectorAll('[data-audio]').forEach((box) => {
+      box.checked = audio[box.dataset.audio];
+    });
+    $('bgmNote').textContent = hasBgm ? '' : 'Chưa có nhạc nền: hãy đặt file public/sounds/bgm.mp3 rồi tải lại giao diện.';
+  }
+
+  function setTiktok(status) {
+    const labels = { connected: 'TikTok: đã kết nối', disconnected: 'TikTok: mất kết nối, đang thử lại', off: 'TikTok: tắt (chỉ giả lập)' };
+    $('ttText').textContent = labels[status] ?? status;
+    $('ttDot').className = `dot ${status === 'connected' ? 'ok' : status === 'disconnected' ? 'bad' : ''}`;
+  }
+
+  function connect() {
+    const ws = new WebSocket(`ws://${location.host}/ws`);
+    ws.onopen = () => {
+      $('wsDot').className = 'dot ok';
+      $('wsText').textContent = 'Máy chủ: đã kết nối';
+    };
+    ws.onclose = () => {
+      $('wsDot').className = 'dot bad';
+      $('wsText').textContent = 'Máy chủ: mất kết nối, đang thử lại';
+      setTimeout(connect, 2000);
+    };
+    ws.onmessage = ({ data }) => {
+      const message = JSON.parse(data);
+      switch (message.t) {
+        case 'hello':
+          buildControls(message.config);
+          setTiktok(message.tiktok);
+          showAudio(message);
+          showState(message.state);
+          break;
+        case 'audio':
+          showAudio(message);
+          break;
+        case 'state':
+          showState(message.state);
+          break;
+        case 'tiktok':
+          setTiktok(message.status);
+          break;
+        case 'event':
+          addLog(describe(message.event));
+          break;
+        case 'game':
+          if (message.event.kind === 'feed') addLog(`TRUYỀN TIN: ${message.event.entry.text}`);
+          else if (message.event.kind === 'notification') addLog(`THÔNG BÁO LỚN: ${message.event.text}`);
+          else if (!['gain', 'damage'].includes(message.event.kind)) addLog(`GAME ${JSON.stringify(message.event)}`);
+          break;
+      }
+    };
+  }
+
+  $('sendChat').addEventListener('click', () => sim('chat', { text: $('text').value }));
+  $('text').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sim('chat', { text: $('text').value });
+  });
+  $('sendLike').addEventListener('click', () => sim('like', { count: $('likes').value }));
+  $('sendShare').addEventListener('click', () => sim('share'));
+  $('sendFollow').addEventListener('click', () => sim('follow'));
+  $('sendGift').addEventListener('click', () => sim('gift', { diamonds: $('giftCoins').value, count: $('giftCount').value, combo: $('giftCombo').checked }));
+  $('pause').addEventListener('change', () => sim('pause', { on: $('pause').checked }));
+  document.querySelectorAll('[data-action]').forEach((el) => {
+    el.addEventListener('click', () => sim(el.dataset.action));
+  });
+  document.querySelectorAll('[data-audio]').forEach((box) => {
+    box.addEventListener('change', () => sim('audio', { kind: box.dataset.audio, on: box.checked }));
+  });
+  document.querySelectorAll('[data-test]').forEach((el) => {
+    el.addEventListener('click', () => sim('audioTest', { kind: el.dataset.test }));
+  });
+
+  connect();
+</script>
+</body>
+</html>

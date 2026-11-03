@@ -1,0 +1,20 @@
+{
+  "name": "tien-mon-van-dao",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.2"
+  },
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "node --test --test-force-exit"
+  },
+  "dependencies": {
+    "tiktok-live-connector": "^2.5.0",
+    "ws": "^8.22.1"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.5"
+  }
+}

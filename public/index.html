@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tiên Môn Vấn Đạo</title>
+<link rel="icon" href="data:,">
+<style>
+  @font-face { font-family: "Great Vibes"; src: url(fonts/great-vibes-vietnamese-400-normal.woff2) format("woff2"); unicode-range: U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB; }
+  @font-face { font-family: "Great Vibes"; src: url(fonts/great-vibes-latin-ext-400-normal.woff2) format("woff2"); unicode-range: U+0100-02BA,U+1E00-1E9F,U+1EF2-1EFF; }
+  @font-face { font-family: "Great Vibes"; src: url(fonts/great-vibes-latin-400-normal.woff2) format("woff2"); unicode-range: U+0000-00FF,U+2000-206F; }
+  @font-face { font-family: "Noto Serif"; font-weight: 500; src: url(fonts/noto-serif-vietnamese-500-normal.woff2) format("woff2"); unicode-range: U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB; }
+  @font-face { font-family: "Noto Serif"; font-weight: 500; src: url(fonts/noto-serif-latin-ext-500-normal.woff2) format("woff2"); unicode-range: U+0100-02BA,U+1E00-1E9F,U+1EF2-1EFF; }
+  @font-face { font-family: "Noto Serif"; font-weight: 500; src: url(fonts/noto-serif-latin-500-normal.woff2) format("woff2"); unicode-range: U+0000-00FF,U+2000-206F; }
+  @font-face { font-family: "Noto Serif"; font-weight: 700; src: url(fonts/noto-serif-vietnamese-700-normal.woff2) format("woff2"); unicode-range: U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB; }
+  @font-face { font-family: "Noto Serif"; font-weight: 700; src: url(fonts/noto-serif-latin-ext-700-normal.woff2) format("woff2"); unicode-range: U+0100-02BA,U+1E00-1E9F,U+1EF2-1EFF; }
+  @font-face { font-family: "Noto Serif"; font-weight: 700; src: url(fonts/noto-serif-latin-700-normal.woff2) format("woff2"); unicode-range: U+0000-00FF,U+2000-206F; }
+
+  :root {
+    --gold: #f2d27a;
+    --gold-deep: #b8862e;
+    --ink: #f6f1e4;
+    --muted: #c5d2e6;
+    --danger: #ff5a4a;
+    --title: #ffb9a0;
+    --outline: 0 1px 3px rgba(4, 10, 28, .95), 0 0 2px rgba(4, 10, 28, .95);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #070c1a; }
+  body { font: 500 15px/1.32 "Noto Serif", "Segoe UI", serif; color: var(--ink); }
+  img { display: block; }
+
+  /* Không đặt transform, opacity, filter hay z-index lên cha của ảnh hòa trộn "screen": sẽ làm hỏng hòa trộn. */
+  #stage { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 0 0; overflow: hidden; background: #0b1328 url(assets/bg_courtyard.webp) center top / cover; }
+  #shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(6, 10, 26, .35) 0%, rgba(6, 10, 26, 0) 18%, rgba(6, 10, 26, 0) 48%, rgba(6, 10, 26, .45) 62%, rgba(6, 10, 26, .55) 100%); }
+  .screen { mix-blend-mode: screen; pointer-events: none; }
+
+  /* ---------- Tiêu đề ---------- */
+  #title { position: absolute; left: 270px; top: 4px; width: 540px; }
+
+  /* ---------- Ghế vinh danh ---------- */
+
+  /* ---------- Ghế vinh danh: bố trí giống Chưởng Môn ---------- */
+  .elder { position: absolute; top: 2px; width: 260px; height: 296px; }
+  #elder0 { left: 6px; }
+  #elder1 { right: 6px; }
+  .elder .halo { position: absolute; left: 35px; top: 14px; width: 190px; height: 190px; }
+  .elder .avatar { left: 0; top: 20px; width: 260px; height: 200px; }
+  .elder .aura { left: 52px; top: 6px; width: 156px; height: 156px; }
+  .elder .sprite { left: 60px; top: 14px; width: 140px; height: 140px; }
+  .elder .label, .elder .rank { display: none; }
+  .elder .wings { left: -12px; top: -6px; width: 284px; }
+  .elder .plate .lbl.long { font-size: 11px; letter-spacing: 0; }
+  .elder .beast { left: 186px; top: 96px; width: 76px; }
+  .elder .plate { position: absolute; left: 10px; top: 176px; width: 240px; height: 70px; background: url(assets/nametag.webp) center / 100% 100% no-repeat; text-align: center; padding-top: 9px; text-shadow: var(--outline); }
+  .elder .plate .lbl { font-weight: 700; font-size: 13px; color: var(--gold); letter-spacing: .5px; white-space: nowrap; }
+  .elder .plate .nm { font-weight: 700; font-size: 17px; line-height: 1.15; white-space: nowrap; overflow: hidden; padding: 0 26px; }
+  .elder .info { position: absolute; left: 0; right: 0; top: 248px; text-align: center; font-size: 14px; line-height: 1.3; text-shadow: var(--outline); white-space: nowrap; overflow: hidden; }
+  .elder .info b { color: var(--gold); }
+  .elder .closed { position: absolute; left: 92px; top: 150px; width: 76px; padding: 0 4px; border-radius: 8px; background: rgba(8, 14, 34, .88); text-align: center; font-size: 13px; color: var(--muted); display: none; }
+  .elder.absent .sprite, .elder.absent .photo, .elder.absent .beast { filter: brightness(.45) saturate(.6); }
+  .elder.absent .closed { display: block; }
+  .elder.absent .halo { opacity: .5; animation: none !important; }
+  .elder.empty .plate .nm { color: var(--muted); font-weight: 500; }
+  .elder.empty .halo { opacity: .4; }
+
+  /* ---------- Chưởng Môn ---------- */
+  #throne { position: absolute; left: 300px; top: 92px; width: 480px; }
+  #master-halo { position: absolute; left: 380px; top: 330px; width: 320px; height: 320px; }
+  #master { position: absolute; left: 400px; top: 380px; width: 280px; height: 300px; }
+  #master .avatar { left: 0; top: 0; width: 280px; height: 300px; }
+  #master .aura { left: 40px; top: 6px; width: 200px; height: 200px; }
+  #master .sprite { left: 50px; top: 16px; width: 180px; height: 180px; }
+  #master-plate { position: absolute; left: 330px; top: 660px; width: 420px; height: 70px; background: url(assets/nametag.webp) center / 100% 100% no-repeat; text-align: center; padding-top: 9px; text-shadow: var(--outline); }
+  #master-plate .lbl { font-weight: 700; font-size: 15px; color: var(--gold); letter-spacing: 1px; }
+  #master-plate .nm { font-weight: 700; font-size: 19px; line-height: 1.1; white-space: nowrap; overflow: hidden; padding: 0 30px; }
+  #master-plate.empty .nm { color: var(--muted); font-size: 16px; }
+
+  /* ---------- Panel luân phiên ---------- */
+  .panel { position: absolute; top: 300px; width: 284px; height: 444px; padding: 42px 30px 36px; background: url(assets/panel_tall.webp) center / 100% 100% no-repeat; }
+  #panel-left { left: 6px; }
+  #panel-right { right: 6px; }
+  .panel h2 { margin: 0 0 6px; text-align: center; font: 700 21px/1.2 "Noto Serif", serif; color: #ffe08a; text-shadow: 0 2px 3px rgba(0, 0, 0, .95), 0 0 10px rgba(255, 200, 90, .45); white-space: nowrap; }
+  .panel .body { height: 330px; overflow: hidden; padding: 6px 9px; border-radius: 10px; background: rgba(4, 8, 22, .72); font-size: 15.5px; line-height: 1.34; color: #fbf6ea; text-shadow: 0 1px 2px #000; }
+  .panel .dots { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; gap: 7px; justify-content: center; }
+  .panel .dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(242, 210, 122, .3); }
+  .panel .dots i.on { background: var(--gold); box-shadow: 0 0 5px var(--gold); }
+  .row { display: grid; grid-template-columns: 22px 1fr auto; column-gap: 6px; padding: 3px 0; border-bottom: 1px solid rgba(242, 210, 122, .2); align-items: baseline; }
+  .row:nth-child(-n+3) .no { color: #ffd76e; font-size: 17px; }
+  .row:last-child { border: 0; }
+  .row .no { color: var(--gold); font-weight: 700; text-align: right; }
+  .row .nm { overflow: hidden; white-space: nowrap; }
+  .row .pt { color: #ffe08a; font-weight: 700; white-space: nowrap; }
+  .line2 { display: flex; justify-content: space-between; gap: 6px; padding: 5px 0; border-bottom: 1px solid rgba(242, 210, 122, .2); }
+  .line2:last-child { border: 0; }
+  .line2 b { color: var(--gold); white-space: nowrap; }
+  .howto { list-style: none; margin: 0; padding: 0; font-size: 13.6px; line-height: 1.26; }
+  .howto li { padding: 3px 0; border-bottom: 1px solid rgba(242, 210, 122, .18); }
+  .howto li:last-child { border: 0; }
+  .howto em, .vault em { font-style: normal; color: var(--gold); font-weight: 700; }
+  .vault { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 12px; line-height: 1.22; }
+  .vault div { padding: 5px 4px; border: 1px solid rgba(242, 210, 122, .3); border-radius: 8px; background: rgba(8, 14, 34, .45); text-align: center; }
+  .vault.tiers { gap: 4px; font-size: 12px; line-height: 1.14; }
+  .vault.tiers div { padding: 2px 3px; }
+  .vault.tiers div div { padding: 0; border: 0; background: none; }
+  .vault.tiers > div:last-child { grid-column: span 2; }
+  .muted { color: var(--muted); }
+
+  /* ---------- 4 ghế dưới Chưởng Môn ---------- */
+  .seat { position: absolute; top: 744px; width: 260px; height: 220px; }
+  .seat .halo { position: absolute; left: 60px; top: 0; width: 140px; height: 140px; }
+  .seat .avatar { left: 0; top: 0; width: 260px; height: 220px; }
+  .seat .aura { left: 75px; top: 14px; width: 110px; height: 110px; }
+  .seat .sprite { left: 82px; top: 20px; width: 96px; height: 96px; }
+  .seat .plate { position: absolute; left: 14px; top: 122px; width: 232px; height: 74px; background: url(assets/nametag.webp) center / 100% 100% no-repeat; text-align: center; padding-top: 10px; text-shadow: var(--outline); }
+  .seat .plate .lbl { font-weight: 700; font-size: 13px; color: var(--gold); }
+  .seat .plate .nm { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; padding: 0 26px; line-height: 1.2; }
+  .seat .plate .rl { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; padding: 0 22px; }
+  .seat.empty .plate .nm { color: var(--muted); font-weight: 500; }
+
+  /* ---------- Avatar chung ---------- */
+  .avatar { position: absolute; }
+  .avatar .aura { position: absolute; }
+  .avatar .sprite { position: absolute; object-fit: contain; }
+  .avatar .sprite.stone { filter: grayscale(.55) brightness(1.04); }
+  /* Khung ảnh đại diện nằm ngay cạnh tên. */
+  .photo { display: inline-flex; vertical-align: -.22em; width: 1.3em; height: 1.3em; margin-right: .3em; border-radius: 50%; overflow: hidden; border: 1.5px solid var(--gold); box-shadow: 0 0 4px rgba(0, 0, 0, .8); background: #24324f; align-items: center; justify-content: center; font-size: .72em; font-weight: 700; color: #fff; text-shadow: none; flex: none; }
+  .photo img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar .ring { display: none; }
+  .avatar .label { position: absolute; left: 0; right: 0; text-align: center; text-shadow: var(--outline), 0 0 4px rgba(4, 10, 28, .9); white-space: nowrap; overflow: hidden; }
+  .inner { color: #ffe9a8; -webkit-text-stroke: .35px #d9a441; }
+  .avatar .rank { position: absolute; left: 0; right: 0; text-align: center; color: var(--muted); text-shadow: var(--outline); white-space: nowrap; overflow: hidden; }
+  .ttl { color: var(--title); font-weight: 700; }
+
+  /* ---------- Dải trạng thái ---------- */
+  #strip { position: absolute; left: 60px; right: 60px; top: 968px; height: 34px; border: 2px solid var(--gold-deep); border-radius: 17px; background: rgba(8, 12, 28, .8); overflow: hidden; text-shadow: var(--outline); }
+  #strip .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(90deg, rgba(90, 170, 255, .55), rgba(170, 120, 255, .7)); transition: width .4s; }
+  #strip .txt { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; }
+  #strip.tide { border-color: #8fd8ff; box-shadow: 0 0 16px rgba(120, 200, 255, .7); }
+  #strip.tide .fill { background: linear-gradient(90deg, rgba(60, 200, 255, .75), rgba(120, 255, 220, .75)); }
+
+  /* ---------- Điện ---------- */
+  #hall { position: absolute; left: 12px; top: 1016px; width: 1056px; height: 636px; }
+  #hall .avatar { width: 176px; height: 125px; }
+  #hall .aura { left: 37px; top: 0; width: 102px; height: 102px; }
+  #hall .sprite { left: 42px; top: 4px; width: 92px; height: 92px; }
+  #hall .label { top: 92px; font-size: 15px; line-height: 17px; font-weight: 700; padding: 0 4px; }
+  #hall .rank { top: 109px; font-size: 12px; line-height: 14px; padding: 0 2px; }
+  #hall-status { position: absolute; left: 0; right: 0; top: 1646px; text-align: center; font-size: 15px; color: var(--muted); text-shadow: var(--outline); }
+  #hall-status b { color: var(--gold); }
+  #hall.hidden { visibility: hidden; }
+
+  /* ---------- Truyền Tin ---------- */
+  #feed-box { position: absolute; left: 10px; top: 1670px; width: 1060px; height: 244px; background: url(assets/log_panel.webp) center / 100% 100% no-repeat; padding: 30px 58px 24px; }
+  #feed-box h3 { position: absolute; left: 0; right: 0; top: 4px; margin: 0; text-align: center; font: 700 15px/1 "Noto Serif", serif; color: var(--gold); text-shadow: var(--outline); letter-spacing: 1px; }
+  #feed { display: flex; flex-direction: column; justify-content: flex-end; height: 100%; gap: 1px; }
+  #feed div { font-size: 19px; line-height: 36px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: var(--outline); transition: background .4s; padding: 0 8px; border-radius: 8px; }
+  #feed div.fresh { background: rgba(242, 210, 122, .12); }
+  #feed .k-join { color: #a9f0b5; } #feed .k-return { color: #bfe0ff; } #feed .k-tier, #feed .k-breakthrough { color: #ffe08a; }
+  #feed .k-pick { color: #9fe6ff; } #feed .k-quest, #feed .k-chest { color: #ffd0a0; } #feed .k-checkin { color: #d8c8ff; }
+  #feed .k-share { color: #9ff0e0; } #feed .k-wash, #feed .k-mutate { color: #8dffb0; } #feed .k-gift { color: #ffc0d8; } #feed .k-likes { color: #ff9fb0; }
+  #feed .k-interact { color: #c5d2e6; } #feed .k-faction { color: #f2d27a; } #feed .k-seat { color: #ffd76e; } #feed .k-boss { color: #ff9f8a; } #feed .k-tide { color: #8fe0ff; } #feed .k-artifact { color: #b8f0ff; } #feed .k-beast { color: #ffd9a0; } #feed .k-wings { color: #f0e6ff; } #feed .k-duel { color: #ffb08a; } #feed .k-event { color: #b8ffd8; }
+
+  /* ---------- Boss ---------- */
+  #boss { position: absolute; left: 0; top: 1004px; width: 1080px; height: 660px; display: none; }
+  #boss.show { display: block; }
+  #boss .head { position: absolute; left: 240px; top: 6px; width: 600px; text-align: center; text-shadow: var(--outline); }
+  #boss .name { font-weight: 700; font-size: 24px; color: var(--gold); }
+  #boss .bar { height: 24px; margin-top: 3px; border: 2px solid var(--gold); border-radius: 12px; background: rgba(8, 12, 28, .85); overflow: hidden; }
+  #boss .fill { height: 100%; width: 100%; background: linear-gradient(180deg, #ff8d6e, #d6271d); transition: width .25s; }
+  #boss.shielded .fill { background: linear-gradient(180deg, #bfe8ff, #4aa3e6); }
+  #boss .hp { margin-top: 2px; font-weight: 700; font-size: 15px; }
+  #boss .art { position: absolute; left: 290px; top: 92px; width: 500px; height: 470px; }
+  #boss .art img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 18px rgba(0, 0, 0, .7)); }
+  #boss.countdown .art img { opacity: .55; }
+  #boss.shielded .art { border-radius: 50%; box-shadow: 0 0 0 5px rgba(150, 215, 255, .85), 0 0 60px 18px rgba(120, 200, 255, .55), inset 0 0 70px rgba(120, 200, 255, .55); }
+  #boss.frenzy .art img { filter: drop-shadow(0 0 28px rgba(255, 50, 30, .95)) saturate(1.3); }
+  #boss .hint { position: absolute; left: 190px; width: 700px; top: 568px; padding: 4px 10px; border-radius: 14px; background: rgba(8, 14, 34, .78); text-align: center; font-weight: 700; font-size: 20px; line-height: 1.3; color: var(--gold); text-shadow: var(--outline); }
+  #boss .hint .bad { color: #ffb0a4; }
+
+  /* ---------- Phong Thưởng ---------- */
+  #award { position: absolute; left: 90px; top: 1030px; width: 900px; height: 540px; display: none; padding: 70px 80px 50px; background: url(assets/plaque.webp) center / 100% 100% no-repeat; text-align: center; text-shadow: var(--outline); }
+  #award.show { display: block; }
+  #award h2 { margin: 0; font: 700 34px/1.2 "Noto Serif", serif; color: var(--gold); }
+  #award .sub { font-size: 17px; color: var(--muted); }
+  #award .podium { display: flex; justify-content: center; align-items: flex-end; gap: 18px; margin-top: 18px; }
+  #award .step { width: 220px; border-radius: 14px 14px 0 0; background: linear-gradient(180deg, rgba(242, 210, 122, .35), rgba(120, 80, 20, .35)); border: 2px solid rgba(242, 210, 122, .6); padding: 10px 8px; }
+  #award .step.p1 { height: 230px; } #award .step.p2 { height: 190px; } #award .step.p3 { height: 160px; }
+  #award .step .place { font-size: 34px; font-weight: 700; color: var(--gold); }
+  #award .step .nm { font-size: 19px; font-weight: 700; white-space: nowrap; overflow: hidden; }
+  #award .step .dm { font-size: 15px; color: var(--muted); }
+  #award .step .rw { font-size: 17px; color: #a9f0b5; font-weight: 700; }
+  #award .last { margin-top: 12px; font-size: 18px; color: var(--title); font-weight: 700; }
+
+  /* ---------- Banner sự kiện (giữa lưới) ---------- */
+  #event-banner { position: absolute; left: 120px; width: 840px; top: 1070px; display: none; padding: 16px 30px; border: 2px solid var(--gold); border-radius: 18px; background: rgba(8, 14, 34, .86); text-align: center; font-weight: 700; font-size: 23px; line-height: 1.3; color: #d6f4ff; text-shadow: var(--outline); box-shadow: 0 0 24px rgba(120, 200, 255, .45); }
+  #event-banner.show { display: block; }
+  #event-banner .big { font-size: 34px; color: var(--gold); letter-spacing: 1px; }
+  #event-banner .q { font-size: 28px; color: #fff3c4; margin: 4px 0 8px; }
+  #event-banner .opts { display: flex; gap: 12px; justify-content: center; }
+  #event-banner .opts div { flex: 1; padding: 8px 6px; border: 1px solid rgba(242, 210, 122, .6); border-radius: 12px; background: rgba(242, 210, 122, .08); font-size: 22px; color: var(--ink); }
+  #event-banner .opts div.right { border-color: #8dffb0; background: rgba(120, 255, 160, .2); color: #c8ffd8; }
+  #event-banner .opts b { color: var(--gold); margin-right: 6px; }
+  #event-banner .sub { margin-top: 8px; font-size: 19px; color: var(--muted); }
+  #event-banner.debate { top: 1040px; }
+
+  /* ---------- Độ kiếp ---------- */
+  #trib { position: absolute; left: 0; top: 1004px; width: 1080px; height: 660px; display: none; }
+  #trib.show { display: block; }
+  #trib .clouds { position: absolute; left: 190px; top: 0; width: 700px; height: 640px; object-fit: cover; }
+  #trib .hero { position: absolute; left: 390px; top: 190px; width: 300px; height: 300px; }
+  #trib .hero .avatar { left: 0; top: 0; width: 300px; height: 300px; }
+  #trib .hero .aura { left: 20px; top: 10px; width: 260px; height: 260px; }
+  #trib .hero .sprite { left: 40px; top: 30px; width: 220px; height: 220px; }
+  #trib .hero .label, #trib .hero .rank { display: none; }
+  #trib .head { position: absolute; left: 190px; top: 8px; width: 700px; text-align: center; text-shadow: var(--outline); }
+  #trib .head .t { font-weight: 700; font-size: 28px; color: #e6d0ff; }
+  #trib .head .n { font-weight: 700; font-size: 22px; color: var(--gold); }
+  #trib .meter { position: absolute; left: 190px; top: 520px; width: 700px; text-align: center; text-shadow: var(--outline); }
+  #trib .meter .bar { height: 26px; border: 2px solid #c9a6ff; border-radius: 13px; background: rgba(8, 12, 28, .85); overflow: hidden; }
+  #trib .meter .bar i { display: block; height: 100%; background: linear-gradient(90deg, #7a4dff, #d9b8ff); transition: width .3s; }
+  #trib .meter .txt { margin-top: 4px; font-weight: 700; font-size: 20px; }
+  #trib .meter .hint { font-size: 17px; color: var(--muted); }
+
+  /* ---------- Cánh, dị thú, pháp bảo quanh ghế VIP ---------- */
+  .avatar .wings, .elder .wings { position: absolute; display: none; pointer-events: none; }
+  .avatar .beast, .elder .beast { position: absolute; display: none; pointer-events: none; filter: drop-shadow(0 0 6px rgba(255, 240, 200, .5)); }
+  #hall .wings { left: 18px; top: -6px; width: 140px; }
+  #hall .beast { left: 122px; top: 42px; width: 52px; }
+  #master .wings { left: -12px; top: -16px; width: 304px; }
+  #master .beast { left: 206px; top: 118px; width: 92px; }
+  .seat .wings { left: 50px; top: 0; width: 160px; }
+  .seat .beast { left: 168px; top: 58px; width: 62px; }
+  #trib .hero .wings, #duel .hero .wings { left: -2px; top: -12px; width: 304px; }
+  #trib .hero .beast, #duel .hero .beast { left: 216px; top: 150px; width: 84px; }
+  .orbit-layer { position: absolute; inset: 0; pointer-events: none; }
+  .orbit { position: absolute; left: 0; top: 0; width: 66px; height: 66px; filter: drop-shadow(0 0 8px rgba(255, 230, 160, .8)); }
+  .orbit-trail { position: absolute; left: 0; top: 0; width: 90px; mix-blend-mode: screen; opacity: .75; }
+  .avatar .sprite.ma { filter: hue-rotate(300deg) saturate(1.7) brightness(.78) contrast(1.15); }
+
+  /* ---------- Chính Đạo – Ma Đạo ---------- */
+  .dao-box { position: absolute; top: 614px; width: 168px; padding: 3px 6px; border-radius: 12px; text-align: center; font-size: 13px; line-height: 1.25; text-shadow: var(--outline); border: 1px solid rgba(242, 210, 122, .5); background: rgba(8, 14, 34, .8); }
+  #dao-chinh { left: 300px; color: #e8f4ff; }
+  #dao-ma { left: 612px; color: #ffb0a0; border-color: rgba(255, 90, 70, .6); background: rgba(40, 6, 10, .82); }
+  .dao-box.rule { box-shadow: 0 0 14px rgba(255, 220, 120, .7); border-color: var(--gold); }
+  .dao-box b { color: var(--gold); }
+
+  /* ---------- Sự kiện khe phút 12 ---------- */
+  #event-banner.wide { top: 1026px; left: 90px; width: 900px; }
+  #event-banner .row3 { display: flex; gap: 18px; align-items: center; }
+  #event-banner .art { width: 190px; flex: none; }
+  #event-banner .grow { flex: 1; text-align: center; }
+  .heat { position: relative; height: 30px; margin: 8px 0 6px; border: 2px solid var(--gold-deep); border-radius: 15px; overflow: hidden; background: linear-gradient(90deg, rgba(90, 110, 160, .5) 0 var(--safe-a), rgba(80, 220, 120, .55) var(--safe-a) var(--safe-b), rgba(230, 160, 60, .45) var(--safe-b) var(--danger), rgba(240, 60, 40, .7) var(--danger) 100%); }
+  .heat i { position: absolute; top: -2px; bottom: -2px; width: 6px; margin-left: -3px; background: #fff; box-shadow: 0 0 10px #fff; transition: left .3s; }
+  .heat-status { font-size: 26px; color: var(--gold); }
+  .heat-status.bad { color: #ff8b78; }
+  .heat-status.good { color: #a9f0b5; }
+  .climb { display: flex; gap: 14px; align-items: flex-end; justify-content: center; height: 190px; margin: 8px 0 4px; }
+  .climb > div { width: 120px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; font-size: 16px; }
+  .climb .col { width: 70px; border-radius: 8px 8px 0 0; background: linear-gradient(180deg, #fff3c4, #d9a441 60%, rgba(120, 80, 20, .6)); box-shadow: 0 0 12px rgba(255, 220, 140, .6); transition: height .4s; }
+  .climb .nm { margin-top: 4px; white-space: nowrap; overflow: hidden; max-width: 120px; }
+  .climb b { color: var(--gold); }
+
+  /* ---------- Khiêu chiến ---------- */
+  #duel { position: absolute; left: 0; top: 1004px; width: 1080px; height: 660px; display: none; }
+  #duel.show { display: block; }
+  #duel .swords { position: absolute; left: 340px; top: 120px; width: 400px; }
+  #duel .hero { position: absolute; top: 170px; width: 300px; height: 300px; }
+  #duel .hero.a { left: 60px; }
+  #duel .hero.b { left: 720px; }
+  #duel .hero .avatar { left: 0; top: 0; width: 300px; height: 300px; }
+  #duel .hero .aura { left: 20px; top: 10px; width: 260px; height: 260px; }
+  #duel .hero .sprite { left: 40px; top: 30px; width: 220px; height: 220px; }
+  #duel .hero .label, #duel .hero .rank { display: none; }
+  #duel .hero.b .sprite { transform: scaleX(-1); }
+  #duel .head { position: absolute; left: 140px; top: 8px; width: 800px; text-align: center; font-weight: 700; font-size: 30px; color: var(--gold); text-shadow: var(--outline); }
+  #duel .names { position: absolute; left: 40px; right: 40px; top: 470px; display: flex; justify-content: space-between; font-weight: 700; font-size: 22px; text-shadow: var(--outline); }
+  #duel .names div { width: 340px; text-align: center; white-space: nowrap; overflow: hidden; }
+  #duel .vs { position: absolute; left: 90px; right: 90px; top: 510px; height: 30px; border: 2px solid var(--gold); border-radius: 15px; overflow: hidden; background: linear-gradient(90deg, #ff6a52, #ff9b6e); }
+  #duel .vs i { display: block; height: 100%; background: linear-gradient(90deg, #4aa3e6, #9fe0ff); transition: width .3s; }
+  #duel .info { position: absolute; left: 90px; right: 90px; top: 548px; display: flex; justify-content: space-between; font-weight: 700; font-size: 19px; text-shadow: var(--outline); }
+  #duel .hint { position: absolute; left: 0; right: 0; top: 584px; text-align: center; font-size: 18px; color: var(--muted); text-shadow: var(--outline); }
+
+  /* ---------- Rơi đồ ---------- */
+  .fx-drop { position: absolute; width: 80px; pointer-events: none; filter: drop-shadow(0 0 12px rgba(255, 230, 150, .9)); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes flap { 0%, 100% { scale: 1 1; } 50% { scale: .9 1.03; } }
+    @keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
+    @keyframes beastGlow { 0%, 86%, 100% { filter: drop-shadow(0 0 6px rgba(255, 240, 200, .5)); } 92% { filter: drop-shadow(0 0 16px rgba(255, 250, 220, 1)) brightness(1.3); } }
+    .wings.vip { animation: flap 3.2s ease-in-out infinite; transform-origin: 50% 40%; }
+    .beast.vip { animation: bob 3s ease-in-out infinite, beastGlow 6s ease-in-out infinite; }
+  }
+
+  /* ---------- Vòng luyện hóa ---------- */
+  .fx-refine { position: absolute; width: 64px; height: 64px; pointer-events: none; mix-blend-mode: screen; }
+
+  /* ---------- Thẻ hồ sơ ---------- */
+  #card { position: absolute; left: 120px; top: 1280px; width: 840px; height: 360px; display: none; padding: 46px 70px 30px; background: url(assets/panel_wide.webp) center / 100% 100% no-repeat; font-size: 16px; line-height: 1.36; text-shadow: var(--outline); }
+  #card.show { display: block; }
+  #card.compact { top: 1520px; height: 150px; padding: 26px 60px 18px; font-size: 15px; }
+  #card h3 { margin: 0 0 2px; font: 700 22px/1.2 "Noto Serif", serif; color: var(--gold); white-space: nowrap; overflow: hidden; }
+  #card .cols { display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px; }
+  #card b { color: var(--gold); }
+  #card .bar { height: 12px; border: 1px solid var(--gold-deep); border-radius: 6px; background: rgba(8, 12, 28, .8); overflow: hidden; margin: 3px 0 4px; }
+  #card .bar i { display: block; height: 100%; background: linear-gradient(90deg, #f2d27a, #ffefb0); }
+  #card .tip { margin-top: 4px; color: #a9f0b5; font-size: 15px; }
+  #card .status { color: #e6d0ff; font-weight: 700; }
+
+  /* ---------- Thông báo lớn ---------- */
+  #banner { position: absolute; left: 250px; top: 140px; width: 580px; height: 190px; display: none; align-items: center; justify-content: center; padding: 34px 64px 46px; background: url(assets/plaque.webp) center / 100% 100% no-repeat; text-align: center; font-weight: 700; font-size: 27px; line-height: 1.25; color: var(--gold); text-shadow: var(--outline), 0 0 12px rgba(0, 0, 0, .8); }
+  #banner.show { display: flex; }
+  #banner.heavenRoot { color: #fff6cf; font-size: 30px; }
+  #master .label, #master .rank, .seat .label, .seat .rank { display: none; }
+  #master-plate .ttl { font-size: 13px; }
+
+  #dot { position: absolute; right: 8px; top: 8px; width: 14px; height: 14px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 8px var(--danger); display: none; }
+  #dot.show { display: block; }
+  #idle { position: absolute; left: 290px; width: 500px; top: 300px; padding: 6px 12px; border-radius: 12px; background: rgba(8, 14, 34, .8); text-align: center; color: var(--muted); font-size: 16px; display: none; }
+  #idle.show { display: block; }
+
+  /* ---------- Chuyển động ghế VIP ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes spin { to { rotate: 360deg; } }
+    @keyframes breatheGlow { 0%, 100% { opacity: .65; } 50% { opacity: 1; } }
+    @keyframes floaty { 50% { translate: 0 -3px; } }
+    @keyframes flicker { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
+    @keyframes flashIn { 0% { filter: brightness(3) saturate(0); opacity: 0; } 40% { filter: brightness(2.2); opacity: 1; } 100% { filter: none; opacity: 1; } }
+    .vip-halo { animation: spin 20s linear infinite, breatheGlow 4s ease-in-out infinite; }
+    #master .sprite, .seat .sprite { animation: floaty 5s ease-in-out infinite; }
+    #hall .aura { animation: flicker 3.2s ease-in-out infinite; }
+    .flash { animation: flashIn 2s ease-out; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="shade"></div>
+
+  <img id="throne" class="screen" src="assets/throne_master.webp" alt="">
+  <img id="master-halo" class="screen vip-halo" src="assets/halo_large.webp" alt="">
+  <div id="orbit-back" class="orbit-layer"></div>
+  <div id="master"></div>
+  <div id="master-plate"><div class="lbl">✦ CHƯỞNG MÔN ✦</div><div class="nm" id="master-name"></div></div>
+
+  <img id="title" class="screen" src="assets/title.webp" alt="Tiên Môn Vấn Đạo">
+
+  <div class="elder" id="elder0"></div>
+  <div class="elder" id="elder1"></div>
+  <div id="orbit-front" class="orbit-layer"></div>
+  <div class="dao-box" id="dao-chinh" hidden></div>
+  <div class="dao-box" id="dao-ma" hidden></div>
+
+  <section class="panel" id="panel-left"><h2></h2><div class="body"></div><div class="dots"></div></section>
+  <section class="panel" id="panel-right"><h2></h2><div class="body"></div><div class="dots"></div></section>
+
+  <div id="seats"></div>
+
+  <div id="strip"><div class="fill"></div><div class="txt"></div></div>
+
+  <div id="hall"></div>
+  <div id="hall-status"></div>
+
+  <div id="boss">
+    <div class="head"><div class="name"></div><div class="bar"><div class="fill"></div></div><div class="hp"></div></div>
+    <div class="art"><img alt=""></div>
+    <div class="hint"></div>
+  </div>
+  <div id="trib"><img class="clouds screen" src="assets/fx_tribulation.webp" alt=""><div class="head"><div class="t"></div><div class="n"></div></div><div class="hero"></div><div class="meter"><div class="bar"><i></i></div><div class="txt"></div><div class="hint"></div></div></div>
+  <div id="duel"><img class="swords screen" src="assets/fx_duel.webp" alt=""><div class="head"></div><div class="hero a"></div><div class="hero b"></div><div class="names"><div></div><div></div></div><div class="vs"><i></i></div><div class="info"><div></div><div></div></div><div class="hint"></div></div>
+  <div id="award"></div>
+  <div id="event-banner"></div>
+  <div id="card"></div>
+
+  <div id="feed-box"><h3>✦ TÔNG MÔN TRUYỀN TIN ✦</h3><div id="feed"></div></div>
+
+  <div id="idle">Chưa bắt đầu phiên live</div>
+  <div id="banner"></div>
+  <div id="dot" title="Mất kết nối"></div>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const REALM_FILES = ['pham_nhan', 'luyen_khi', 'truc_co', 'kim_dan', 'nguyen_anh', 'hoa_than'];
+  const FACTION_ICONS = { kiem: '⚔️', dan: '⚗️', tran: '☯️' };
+  const FEED_ICONS = {
+    join: '🌱', return: '🔔', tier: '⬆️', breakthrough: '⚡', pick: '💎', quest: '📜', chest: '🎁', checkin: '📅',
+    share: '📣', wash: '💧', mutate: '🌀', artifact: '🗡️', beast: '🐾', wings: '🪽', duel: '⚔️', event: '🎪', gift: '🎁', likes: '❤️', interact: '💬', faction: '🏳️', seat: '👑', boss: '🐉', tide: '🌊',
+  };
+  const RANK_SHORT = { 'Đệ tử ký danh': 'Ký danh', 'Đệ tử ngoại môn': 'Ngoại môn', 'Đệ tử nội môn': 'Nội môn' };
+  const SEAT_LEFTS = [8, 278, 542, 812];
+  const CELL_W = 176;
+  const CELL_H = 125;
+  const FRESH_MS = 5000;
+
+  let config = null;
+  let state = null;
+  let serverSkew = 0;
+
+  const fmt = (n) => Math.trunc(Number(n) || 0).toLocaleString('vi-VN');
+  // 1.234 → 1,2K; 1.500.000 → 1,5M
+  function short(n) {
+    const v = Math.trunc(Number(n) || 0);
+    const pick = (d, s) => `${(Math.floor((v / d) * 10) / 10).toFixed(1).replace('.', ',')}${s}`;
+    if (Math.abs(v) >= 1e9) return pick(1e9, 'B');
+    if (Math.abs(v) >= 1e6) return pick(1e6, 'M');
+    if (Math.abs(v) >= 1e3) return pick(1e3, 'K');
+    return String(v);
+  }
+  const nowServer = () => Date.now() + serverSkew;
+  const clock = (ms) => {
+    const total = Math.max(Math.ceil(ms / 1000), 0);
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+  };
+  const secs = (ms) => Math.max(Math.ceil(ms / 1000), 0);
+
+  function clip(name, max = config?.display.nameMaxChars ?? 12) {
+    const chars = Array.from(String(name ?? ''));
+    return chars.length > max ? `${chars.slice(0, max - 1).join('')}…` : chars.join('');
+  }
+
+  function make(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  const realmFile = (index) => REALM_FILES[Math.min(index, REALM_FILES.length - 1)];
+  // Từ Luyện Hư trở lên dùng áo Hóa Thần, hào quang lớn dần.
+  const auraScale = (index) => 1 + Math.max(index - 5, 0) * 0.14;
+
+  function setPhoto(box, player, fallbackSprite = false) {
+    const key = `${player.id}|${player.avatar}|${fallbackSprite}`;
+    if (box._key === key) return;
+    box._key = key;
+    box.replaceChildren();
+    box.style.background = '';
+    const initial = () => {
+      if (fallbackSprite) {
+        const img = make('img');
+        img.src = `assets/disciple_${realmFile(player.realmIndex)}.webp`;
+        img.style.objectPosition = '50% 20%';
+        img.style.transform = 'scale(1.5) translateY(12%)';
+        box.replaceChildren(img);
+        return;
+      }
+      box.replaceChildren(Array.from(player.name)[0]?.toUpperCase() ?? '?');
+      const color = config.elements[player.main]?.color;
+      box.style.background = color && color !== 'rainbow' ? color : '#7a5cd6';
+    };
+    if (!player.avatar) return initial();
+    const img = make('img');
+    img.alt = '';
+    img.referrerPolicy = 'no-referrer';
+    img.onerror = initial;
+    img.src = player.avatar;
+    box.append(img);
+  }
+
+  // ---------- Avatar ----------
+
+  function createAvatar() {
+    const root = make('div', 'avatar');
+    const aura = make('img', 'aura screen');
+    const sprite = make('img', 'sprite');
+    const photo = make('div', 'photo');
+    const ring = make('img', 'ring');
+    ring.src = 'assets/badge.webp';
+    const label = make('div', 'label');
+    const nameText = make('span');
+    label.append(photo, nameText);
+    const rank = make('div', 'rank');
+    const wings = make('img', 'wings screen');
+    const beast = make('img', 'beast');
+    aura.alt = sprite.alt = ring.alt = wings.alt = beast.alt = '';
+    root.append(aura, wings, sprite, ring, beast, label, rank);
+    root._parts = { aura, sprite, photo, label, rank, wings, beast, nameText };
+    return root;
+  }
+
+  // Cánh theo cấp thiên dực, càng cao càng lớn và sáng.
+  function setWings(img, level, vip) {
+    img.style.display = level ? 'block' : 'none';
+    if (!level) return;
+    const file = `assets/wings_${level}.webp`;
+    if (img.getAttribute('src') !== file) img.src = file;
+    img.style.scale = String(0.82 + level * 0.06);
+    img.classList.toggle('vip', vip);
+  }
+
+  // Dị thú xuất chiến: trong điện chỉ hiện từ cấp 5, ghế VIP hiện mọi cấp.
+  function setBeast(img, beast, vip) {
+    const show = Boolean(beast) && (vip || beast.level >= (config.beast?.hallMinLevel ?? 5));
+    img.style.display = show ? 'block' : 'none';
+    if (!show) return;
+    const file = `assets/${beast.image}.webp`;
+    if (img.getAttribute('src') !== file) img.src = file;
+    img.classList.toggle('vip', vip);
+  }
+
+  function updateAvatar(root, player, { withRank = true, vip = false } = {}) {
+    const key = [player.id, player.avatar, player.name, player.realmIndex, player.tier, player.main, player.rank, player.faction, player.title,
+      player.wings, player.beast?.id, player.beast?.level, player.dao, vip].join('|');
+    if (root._key === key) return;
+    root._key = key;
+    root.dataset.player = player.id;
+    const { aura, sprite, photo, label, rank } = root._parts;
+    sprite.src = `assets/disciple_${realmFile(player.realmIndex)}.webp`;
+    sprite.classList.toggle('ma', player.dao === 'ma');
+    sprite.classList.toggle('stone', player.realmIndex <= 1 && player.dao !== 'ma');
+    setWings(root._parts.wings, player.wings ?? 0, vip);
+    setBeast(root._parts.beast, player.beast, vip);
+    aura.src = `assets/aura_${player.main}.webp`;
+    aura.style.scale = String(auraScale(player.realmIndex));
+    setPhoto(photo, player);
+    const icon = player.faction ? `${FACTION_ICONS[player.faction]} ` : '';
+    root._parts.nameText.textContent = `${icon}${clip(player.name)}`;
+    label.classList.toggle('inner', player.rank === 'Đệ tử nội môn');
+    rank.replaceChildren();
+    if (withRank) rank.append(`${RANK_SHORT[player.rank] ?? player.rank} · ${player.realm}`);
+    if (player.title && !withRank) rank.append(make('span', 'ttl', player.title));
+  }
+
+  // ---------- Ghế vinh danh ----------
+
+  function buildElders() {
+    for (const i of [0, 1]) {
+      const box = $(`elder${i}`);
+      const halo = make('img', 'halo screen vip-halo');
+      halo.src = 'assets/halo_large.webp';
+      halo.alt = '';
+      const plate = make('div', 'plate');
+      const nm = make('div', 'nm');
+      const label = config.seats.elders[i];
+      plate.append(make('div', `lbl${label.length > 10 ? ' long' : ''}`, `✦ ${label.toUpperCase()} ✦`), nm);
+      const info = make('div', 'info');
+      const closed = make('div', 'closed', 'Bế quan');
+      box.append(halo, plate, info, closed);
+      box._parts = { nm, info, plate, avatar: null };
+    }
+  }
+
+  function renderElders(elders) {
+    elders.forEach((entry, i) => {
+      const box = $(`elder${i}`);
+      const parts = box._parts;
+      const player = entry.player;
+      box.classList.toggle('empty', !player);
+      box.classList.toggle('absent', Boolean(player && !player.present));
+      if (!player) {
+        parts.avatar?.remove();
+        parts.avatar = null;
+        box._owner = null;
+        nameWithPhoto(parts.nm, null, 'Còn trống');
+        parts.info.replaceChildren();
+        return;
+      }
+      if (!parts.avatar) {
+        parts.avatar = createAvatar();
+        box.insertBefore(parts.avatar, parts.plate);
+      }
+      if (box._owner !== player.id) {
+        if (box._owner !== undefined) flash(parts.avatar);
+        box._owner = player.id;
+      }
+      // Vắng mặt: cánh đứng yên như hào quang.
+      updateAvatar(parts.avatar, player, { withRank: false, vip: Boolean(player.present) });
+      nameWithPhoto(parts.nm, player, `${player.faction ? `${FACTION_ICONS[player.faction]} ` : ''}${clip(player.name, 14)}`);
+      parts.nm.classList.toggle('inner', player.rank === 'Đệ tử nội môn');
+      parts.info.replaceChildren(player.realm, ' · ', make('b', '', `${short(player.total)} tu vi`));
+      if (player.title) parts.info.append(' · ', make('span', 'ttl', player.title));
+    });
+  }
+
+  // ---------- Chưởng Môn và 4 ghế ----------
+
+  const seatBoxes = [];
+  let masterAvatar = null;
+
+  function buildSeats() {
+    config.seats.session.slice(1).forEach((name, i) => {
+      const seat = make('div', 'seat');
+      seat.style.left = `${SEAT_LEFTS[i]}px`;
+      const halo = make('img', 'halo screen vip-halo');
+      halo.src = 'assets/halo_large.webp';
+      halo.alt = '';
+      const plate = make('div', 'plate');
+      const lbl = make('div', 'lbl', name);
+      const nm = make('div', 'nm');
+      const rl = make('div', 'rl');
+      plate.append(lbl, nm, rl);
+      seat.append(halo, plate);
+      $('seats').append(seat);
+      seatBoxes.push({ seat, nm, rl, avatar: null, owner: undefined });
+    });
+  }
+
+  // Không lóe cả khối có ảnh hòa trộn "screen" (filter sẽ làm lộ nền đen): chỉ lóe ảnh nhân vật và chân dung.
+  // Ghi tên kèm khung ảnh đại diện vào một ô; khung được giữ lại để ảnh không tải lại mỗi giây.
+  function nameWithPhoto(node, player, text) {
+    node._photo ??= make('span', 'photo');
+    node._text ??= make('span');
+    node._text.replaceChildren(text);
+    if (!player) {
+      node.replaceChildren(node._text);
+      return;
+    }
+    setPhoto(node._photo, player);
+    if (node.firstChild !== node._photo) node.replaceChildren(node._photo, node._text);
+  }
+
+  function flash(node) {
+    const targets = node.querySelectorAll('.sprite, .portrait');
+    for (const target of targets.length ? targets : [node]) {
+      target.classList.remove('flash');
+      void target.offsetWidth;
+      target.classList.add('flash');
+    }
+  }
+
+  function renderSeats(seats) {
+    const master = seats[0]?.player;
+    $('master-plate').classList.toggle('empty', !master);
+    nameWithPhoto($('master-name'), master, master ? `${master.faction ? `${FACTION_ICONS[master.faction]} ` : ''}${clip(master.name, 16)}` : 'Còn trống');
+    if (master?.title) $('master-name')._text.append(make('span', 'ttl', ` · ${master.title}`));
+    if (master) {
+      if (!masterAvatar) {
+        masterAvatar = createAvatar();
+        $('master').append(masterAvatar);
+      }
+      if (masterAvatar._owner !== master.id) {
+        flash(masterAvatar);
+        masterAvatar._owner = master.id;
+      }
+      updateAvatar(masterAvatar, master, { withRank: false, vip: true });
+    } else if (masterAvatar) {
+      masterAvatar.remove();
+      masterAvatar = null;
+    }
+
+    seats.slice(1).forEach((entry, i) => {
+      const box = seatBoxes[i];
+      const player = entry.player;
+      box.seat.classList.toggle('empty', !player);
+      if (!player) {
+        box.avatar?.remove();
+        box.avatar = null;
+        box.owner = null;
+        nameWithPhoto(box.nm, null, 'Còn trống');
+        box.rl.textContent = '';
+        return;
+      }
+      if (!box.avatar) {
+        box.avatar = createAvatar();
+        box.seat.insertBefore(box.avatar, box.seat.querySelector('.plate'));
+      }
+      if (box.owner !== player.id) {
+        if (box.owner !== undefined) flash(box.avatar);
+        box.owner = player.id;
+      }
+      updateAvatar(box.avatar, player, { withRank: false, vip: true });
+      nameWithPhoto(box.nm, player, `${player.faction ? `${FACTION_ICONS[player.faction]} ` : ''}${clip(player.name)}`);
+      box.nm.classList.toggle('inner', player.rank === 'Đệ tử nội môn');
+      box.rl.replaceChildren(player.realm);
+      if (player.title) box.rl.append(' · ', make('span', 'ttl', player.title));
+    });
+  }
+
+  // ---------- Điện ----------
+
+  const hallNodes = [];
+
+  function renderHall(hall) {
+    hall.seats.forEach((player, slot) => {
+      let node = hallNodes[slot];
+      if (!player) {
+        if (node) node.style.display = 'none';
+        return;
+      }
+      if (!node) {
+        node = createAvatar();
+        node.style.left = `${(slot % hall.columns) * CELL_W}px`;
+        node.style.top = `${Math.floor(slot / hall.columns) * CELL_H}px`;
+        $('hall').append(node);
+        hallNodes[slot] = node;
+      }
+      node.style.display = '';
+      updateAvatar(node, player);
+    });
+    const { keywords } = config;
+    $('hall-status').replaceChildren(
+      make('b', '', fmt(hall.closed)), ' đệ tử bế quan · ',
+      make('b', '', fmt(hall.waiting)), ' đang chờ vào điện · thả tim, bình luận để vào điện',
+    );
+    void keywords;
+  }
+
+  // ---------- Panel luân phiên ----------
+
+  let rotation = 0;
+  let lastRotate = Date.now();
+
+  function rankRows(list, valueOf) {
+    if (list.length === 0) return [make('div', 'muted', 'Chưa có ai trên bảng')];
+    return list.map((player, i) => {
+      const row = make('div', 'row');
+      const nm = make('span', `nm${player.rank === 'Đệ tử nội môn' ? ' inner' : ''}`, clip(player.name, 11));
+      row.append(make('span', 'no', String(i + 1)), nm, make('span', 'pt', valueOf(player)));
+      return row;
+    });
+  }
+
+  function leftPages(s) {
+    return [
+      { title: 'Thiên Kiêu Bảng', body: () => rankRows(s.boards.session, (p) => short(p.points)) },
+      { title: 'Thiên Bảng', body: () => rankRows(s.boards.total, (p) => short(p.points)) },
+      { title: 'Bảng Tuần', body: () => rankRows(s.boards.week, (p) => short(p.points)) },
+    ];
+  }
+
+  function scheduleRows(s) {
+    if (!s.session.active) return [make('div', 'muted', 'Chưa bắt đầu phiên live')];
+    const rows = s.schedule.upcoming.map((item) => {
+      const row = make('div', 'line2');
+      const when = item.at === null ? 'chờ' : clock(item.at - nowServer());
+      row.append(make('span', '', item.label), make('b', '', when));
+      return row;
+    });
+    if (s.schedule.paused) rows.unshift(make('div', 'muted', '⏸ Lịch đang tạm dừng'));
+    if (s.enrage > 1) {
+      const row = make('div', 'line2');
+      row.append(make('span', '', 'Boss cường hóa'), make('b', '', `x${s.enrage.toFixed(1)}`));
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  function howtoRows() {
+    const k = config.keywords;
+    const items = [
+      ['Chat ', `"${k.join[0]}"`, ` nhập môn · "${k.lookup[0]}" xem hồ sơ`],
+      [`${config.ranks.outerLikes} tim → `, 'đệ tử ngoại môn', ''],
+      ['Tặng quà → ', `tu vi = xu × ${config.cultivation.pointsPerDiamond}`, ''],
+      ['Top phiên → ', 'ghế Chưởng Môn', ''],
+      ['Chat ', `"${k.factions.kiem[0]}/${k.factions.dan[0]}/${k.factions.tran[0]}"`, ' chọn phe'],
+      ['Mưa linh thạch: chat ', `"${k.pickUp[0]}"`, ''],
+      ['Boss: ', `"${k.attack[0]}"`, `, phe trận "${k.breakShield[0]}", phe đan "${k.brewPill[0]}"`],
+      [`Cả phòng ${fmt(config.tide.likesPerMilestone)} tim → `, `Linh Khí Triều x${config.tide.mult}`, ''],
+    ];
+    const ul = make('ul', 'howto');
+    ul.append(...items.map(([a, b, c]) => {
+      const li = make('li');
+      li.append(a, make('em', '', b), c);
+      return li;
+    }));
+    return [ul];
+  }
+
+  function questRows(s) {
+    const rows = s.quests.list.map((q, i) => {
+      const row = make('div', 'line2');
+      row.append(make('span', '', `${i + 1}. ${q.name}`));
+      return row;
+    });
+    const chest = make('div', 'line2');
+    chest.append(make('span', '', 'Xong cả ba → Rương Nhiệm Vụ'), make('b', '', `+${fmt(s.quests.chestReward)}`));
+    rows.push(chest, make('div', 'muted', 'Làm mới lúc 00:00 mỗi ngày · chat "check" xem tiến độ'));
+    return rows;
+  }
+
+  function vaultRows() {
+    const grid = make('div', 'vault');
+    if (config.modules?.vault) {
+      grid.classList.add('tiers');
+      for (const tier of config.vault.tiers) {
+        const cell = make('div');
+        const range = tier.max === null ? `từ ${fmt(tier.min)} xu` : `${fmt(tier.min)}–${fmt(tier.max)} xu`;
+        cell.append(make('em', '', tier.name), make('div', '', range), make('div', 'muted', tier.effect));
+        grid.append(cell);
+      }
+      return [grid, make('div', 'muted', `Mọi quà: tu vi = xu × ${config.cultivation.pointsPerDiamond} · tính theo từng món`)];
+    }
+    for (const gift of config.gifts.vault) {
+      const cell = make('div');
+      cell.append(make('em', '', `${gift.name}`), make('div', '', `${fmt(gift.diamonds)} xu`), make('div', 'muted', gift.effect));
+      grid.append(cell);
+    }
+    return [grid, make('div', 'muted', `Mọi quà: tu vi = xu × ${config.cultivation.pointsPerDiamond}`)];
+  }
+
+  function eventRows() {
+    const m = config.modules ?? {};
+    const items = [];
+    if (m.tribulation) items.push(['Bình cảnh: ', `"${config.tribulation.keywords[0]}"`, `, cả phòng "${config.tribulation.helpKeywords[0]}"`]);
+    if (m.duel) items.push(['Kim Đan+: ', `"${config.duel.keywords[0]}"`, `, người xem "${config.duel.supportKeywords[0]} [tên]"`]);
+    if (m.debate) items.push(['Luận Đạo: ', '"1/2/3"', ' trả lời nhanh']);
+    if (m.alchemy) items.push(['Luyện Đan: ', `"${config.alchemy.keywords[0]}"`, ' giữ lửa vùng xanh']);
+    if (m.ladder) items.push(['Thiên Thê: ', `"${config.ladder.keywords[0]}"`, ' leo thật cao']);
+    if (m.secret) items.push([`${config.secret.minRealm}+: `, `"${config.secret.keywords[0]}"`, ' săn dị thú']);
+    if (m.beast) items.push(['Đổi dị thú: ', `"${config.beast.switchKeywords[0]} [tên]"`, '']);
+    if (m.dao) items.push(['Đạo tâm: ', `"${config.dao.keywords.ma[0]}/${config.dao.keywords.chinh[0]}"`, '']);
+    const ul = make('ul', 'howto');
+    ul.append(...items.map(([a, b, c]) => {
+      const li = make('li');
+      li.append(a, make('em', '', b), c);
+      return li;
+    }));
+    return [ul];
+  }
+
+  function rightPages(s) {
+    return [
+      { title: 'Lịch Thiên Đạo', body: () => scheduleRows(s) },
+      { title: 'Cách Chơi', body: howtoRows },
+      { title: 'Sự Kiện', body: eventRows },
+      { title: 'Nhiệm Vụ Ngày', body: () => questRows(s) },
+      { title: 'Bảo Khố', body: vaultRows },
+    ];
+  }
+
+  function renderPanel(id, pages, index, fixed) {
+    const panel = $(id);
+    const page = fixed ?? pages[index % pages.length];
+    panel.querySelector('h2').textContent = page.title;
+    panel.querySelector('.body').replaceChildren(...page.body());
+    const dots = panel.querySelector('.dots');
+    dots.replaceChildren(...(fixed ? [] : pages.map((_, i) => make('i', i === index % pages.length ? 'on' : ''))));
+  }
+
+  function renderPanels(s) {
+    if (Date.now() - lastRotate >= config.panels.rotateSec * 1000) {
+      rotation += 1;
+      lastRotate = Date.now();
+    }
+    const fight = s.boss?.phase === 'fight';
+    const damage = fight
+      ? { title: 'Bảng Sát Thương', body: () => rankRows(s.boss.board, (p) => short(p.damage)) }
+      : null;
+    renderPanel('panel-left', leftPages(s), rotation, damage);
+    renderPanel('panel-right', rightPages(s), rotation, null);
+  }
+
+  // ---------- Dải trạng thái ----------
+
+  function renderStrip(s) {
+    const strip = $('strip');
+    const tide = s.tide.active;
+    strip.classList.toggle('tide', tide);
+    const step = config.tide.likesPerMilestone;
+    const into = s.room.likes - (s.room.next - step);
+    strip.querySelector('.fill').style.width = `${tide ? 100 : Math.min((into / step) * 100, 100)}%`;
+    strip.querySelector('.txt').textContent = tide
+      ? `🌊 LINH KHÍ TRIỀU · tu vi x${s.tide.mult} · còn ${secs(s.tide.until - nowServer())}s`
+      : `Cả phòng: ${fmt(s.room.likes)}/${fmt(s.room.next)} tim → Linh Khí Triều`;
+  }
+
+  // ---------- Boss, phong thưởng, banner sự kiện ----------
+
+  function renderBoss(s) {
+    const { boss } = s;
+    const box = $('boss');
+    const occupying = boss && boss.phase !== 'award';
+    box.classList.toggle('show', Boolean(occupying));
+    $('hall').classList.toggle('hidden', Boolean(boss || s.tribulation || s.duel));
+    if (!occupying) return;
+    const file = `assets/boss_${boss.element}.webp`;
+    const img = box.querySelector('.art img');
+    if (img.getAttribute('src') !== file) img.src = file;
+    const name = `Boss hệ ${config.elements[boss.element].name}`;
+    box.classList.toggle('countdown', boss.phase === 'countdown');
+    box.classList.toggle('shielded', Boolean(boss.shield));
+    box.classList.toggle('frenzy', Boolean(boss.frenzy));
+    box.querySelector('.name').textContent = boss.enrage > 1 ? `${name} · cường hóa x${boss.enrage.toFixed(1)}` : name;
+    const bar = box.querySelector('.bar');
+    const hint = box.querySelector('.hint');
+    if (boss.phase === 'countdown') {
+      bar.style.visibility = 'hidden';
+      box.querySelector('.hp').textContent = '';
+      hint.replaceChildren(make('div', '', `${name} xuất hiện sau ${secs(boss.endsAt - nowServer())} giây!`));
+      return;
+    }
+    bar.style.visibility = '';
+    box.querySelector('.fill').style.width = `${(boss.hp / boss.maxHp) * 100}%`;
+    box.querySelector('.hp').textContent = `${fmt(boss.hp)}/${fmt(boss.maxHp)} · tổng sát thương ${fmt(boss.totalDamage)} · còn ${clock(boss.endsAt - nowServer())}`;
+    const { attack, breakShield, brewPill } = config.keywords;
+    const lines = [];
+    if (boss.shield) lines.push(make('div', '', `🛡 Khiên! Phe trận chat "${breakShield[0]}" ${boss.shield.progress}/${boss.shield.need}`));
+    if (boss.frenzy) {
+      if (nowServer() < boss.protectedUntil) lines.push(make('div', '', `💊 Đan Hộ Thể còn ${secs(boss.protectedUntil - nowServer())} giây`));
+      else lines.push(make('div', 'bad', `🔥 Cuồng nộ! Im lặng sẽ bị hút tu vi · phe đan chat "${brewPill[0]}" ${boss.pill.progress}/${boss.pill.need}`));
+    }
+    if (lines.length === 0) lines.push(make('div', '', `Chat "${attack[0]}" · thả tim · tặng quà để tấn công!`));
+    hint.replaceChildren(...lines);
+  }
+
+  function renderDebateAward(box, award) {
+    const key = `debate|${award.question}`;
+    if (box._key === key) return;
+    box._key = key;
+    const podium = make('div', 'podium');
+    for (const index of [1, 0, 2]) {
+      const entry = award.top[index];
+      if (!entry) continue;
+      const step = make('div', `step p${index + 1}`);
+      step.append(make('div', 'place', String(index + 1)), make('div', 'nm', clip(entry.name)), make('div', 'rw', `+${fmt(entry.reward)} tu vi`));
+      podium.append(step);
+    }
+    box.replaceChildren(
+      make('h2', '', '✦ PHONG THƯỞNG · NGỘ ĐẠO ✦'),
+      make('div', 'sub', `Đáp án ${award.answer}: ${award.options[award.answer - 1]} · ${fmt(award.correct)}/${fmt(award.answered)} đạo hữu trả lời đúng`),
+      award.top.length ? podium : make('div', 'last', 'Chưa ai ngộ đạo lần này'),
+    );
+  }
+
+  function renderAward(s) {
+    const debateAward = s.debate?.phase === 'award' ? s.debate : null;
+    const award = s.boss?.phase === 'award' && s.boss.result === 'killed' ? s.boss : null;
+    const box = $('award');
+    box.classList.toggle('show', Boolean(award || debateAward));
+    if (debateAward && !award) return renderDebateAward(box, debateAward);
+    if (!award) return;
+    const key = JSON.stringify(award.top);
+    if (box._key === key) return;
+    box._key = key;
+    const order = [1, 0, 2];
+    const podium = make('div', 'podium');
+    for (const index of order) {
+      const entry = award.top[index];
+      if (!entry) continue;
+      const step = make('div', `step p${index + 1}`);
+      step.append(make('div', 'place', String(index + 1)), make('div', 'nm', clip(entry.name)), make('div', 'dm', `${fmt(entry.damage)} sát thương`), make('div', 'rw', `+${fmt(entry.reward)} tu vi`));
+      podium.append(step);
+    }
+    box.replaceChildren(
+      make('h2', '', '✦ PHONG THƯỞNG ✦'),
+      make('div', 'sub', `${fmt(award.participants)} đạo hữu tham gia · mỗi người +${fmt(config.boss.rewards.participation)} tu vi`),
+      podium,
+      make('div', 'last', `Đòn cuối: ${clip(award.lastHit.name, 16)} · danh hiệu "${config.boss.rewards.lastHitTitle}"`),
+    );
+  }
+
+  function alchemyView(a) {
+    const heat = make('div', 'heat');
+    heat.style.setProperty('--safe-a', `${a.safe[0]}%`);
+    heat.style.setProperty('--safe-b', `${a.safe[1]}%`);
+    heat.style.setProperty('--danger', `${a.danger}%`);
+    const marker = make('i');
+    marker.style.left = `${a.heat}%`;
+    heat.append(marker);
+    const tone = a.heat > a.danger ? 'bad' : a.heat >= a.safe[0] && a.heat <= a.safe[1] ? 'good' : '';
+    const art = make('img', 'art');
+    art.src = 'assets/cauldron.webp';
+    const grow = make('div', 'grow');
+    grow.append(
+      make('div', 'big', 'LUYỆN ĐAN ĐẠI HỘI'),
+      heat,
+      make('div', `heat-status ${tone}`, `${a.status} · hỏa hầu ${a.heat}`),
+      make('div', 'sub', `${a.stable}/${a.need} giây ổn định · còn ${secs(a.endsAt - nowServer())}s · chat "${config.alchemy.keywords[0]}", thả tim, tặng quà`),
+    );
+    const row = make('div', 'row3');
+    row.append(art, grow);
+    return [row];
+  }
+
+  function ladderView(l) {
+    const max = Math.max(1, ...l.top.map((p) => p.steps));
+    const climb = make('div', 'climb');
+    for (const p of l.top) {
+      const cell = make('div');
+      const col = make('div', 'col');
+      col.style.height = `${Math.max((p.steps / max) * 140, 8)}px`;
+      cell.append(make('b', '', `${fmt(p.steps)} bậc`), col, make('div', 'nm', clip(p.name, 10)));
+      climb.append(cell);
+    }
+    return [
+      make('div', 'big', 'ĐĂNG THIÊN THÊ'),
+      l.top.length ? climb : make('div', 'q', 'Chưa ai bước lên thang trời'),
+      make('div', 'sub', `Chat "${config.ladder.keywords[0]}" · 10 tim = 1 bậc · quà xu = bậc · còn ${secs(l.endsAt - nowServer())}s · ${fmt(l.climbers)} đạo hữu`),
+    ];
+  }
+
+  function secretView(g) {
+    const art = make('img', 'art screen');
+    art.src = 'assets/portal.webp';
+    const grow = make('div', 'grow');
+    grow.append(
+      make('div', 'big', 'BÍ CẢNH KHAI MỞ'),
+      make('div', 'q', `Từ ${g.minRealm} trở lên chat "${config.secret.keywords[0].toUpperCase()}" để vào`),
+      make('div', 'sub', `${fmt(g.inside)} đạo hữu đã vào · cổng đóng sau ${secs(g.endsAt - nowServer())}s · có cơ hội nhận Linh Thú Đản`),
+    );
+    const row = make('div', 'row3');
+    row.append(art, grow);
+    return [row];
+  }
+
+  function renderEventBanner(s) {
+    const banner = $('event-banner');
+    const debate = s.debate?.phase === 'ask' ? s.debate : null;
+    const rain = s.rain.active ? s.rain : null;
+    const special = s.alchemy ? alchemyView(s.alchemy) : s.ladder ? ladderView(s.ladder) : s.secret ? secretView(s.secret) : null;
+    banner.classList.toggle('show', Boolean(rain || debate || special));
+    banner.classList.toggle('debate', Boolean(debate));
+    banner.classList.toggle('wide', Boolean(special));
+    if (special) {
+      banner.replaceChildren(...special);
+      return;
+    }
+    if (debate) {
+      const opts = make('div', 'opts');
+      debate.options.forEach((text, i) => {
+        const cell = make('div');
+        cell.append(make('b', '', String(i + 1)), text);
+        opts.append(cell);
+      });
+      banner.replaceChildren(
+        make('div', 'big', 'LUẬN ĐẠO ĐẠI HỘI'),
+        make('div', 'q', debate.question),
+        opts,
+        make('div', 'sub', `Chat 1, 2 hoặc 3 · chỉ tính lần đầu · còn ${secs(debate.endsAt - nowServer())}s · ${fmt(debate.answered)} đạo hữu đã trả lời`),
+      );
+      return;
+    }
+    if (!rain) return;
+    banner.replaceChildren(
+      make('div', 'big', 'THIÊN GIÁNG LINH THẠCH'),
+      make('div', '', `Gõ "${config.keywords.pickUp[0].toUpperCase()}" thật nhanh! · còn ${secs(rain.endsAt - nowServer())}s · ${rain.fast}/${rain.fastCount} suất nhanh nhất`),
+    );
+  }
+
+  const duelAvatars = [null, null];
+
+  function renderDuel(s) {
+    const duel = s.duel;
+    const box = $('duel');
+    box.classList.toggle('show', Boolean(duel));
+    if (!duel) return;
+    duel.sides.forEach((side, i) => {
+      const hero = box.querySelector(i === 0 ? '.hero.a' : '.hero.b');
+      if (!duelAvatars[i]) {
+        duelAvatars[i] = createAvatar();
+        hero.append(duelAvatars[i]);
+      }
+      updateAvatar(duelAvatars[i], side.player, { withRank: false, vip: true });
+    });
+    const [a, b] = duel.sides;
+    box.querySelector('.head').textContent = `⚔️ KHIÊU CHIẾN · còn ${secs(duel.endsAt - nowServer())}s`;
+    const names = box.querySelectorAll('.names div');
+    nameWithPhoto(names[0], a.player, `${clip(a.player.name, 14)} · ${a.player.realm}`);
+    nameWithPhoto(names[1], b.player, `${clip(b.player.name, 14)} · ${b.player.realm}`);
+    box.querySelector('.vs i').style.width = `${(a.power / Math.max(a.power + b.power, 1)) * 100}%`;
+    const info = box.querySelectorAll('.info div');
+    info[0].textContent = `Chiến lực ${fmt(a.power)}`;
+    info[1].textContent = `Chiến lực ${fmt(b.power)}`;
+    box.querySelector('.hint').textContent = `Người đấu chat "${config.keywords.attack[0]}", thả tim, tặng quà · người xem chat "${config.duel.supportKeywords[0]} [tên]"`;
+  }
+
+  function renderDao(s) {
+    const show = Boolean(s.dao);
+    $('dao-chinh').hidden = !show;
+    $('dao-ma').hidden = !show;
+    if (!show) return;
+    const { names, keywords, mult } = config.dao;
+    const box = (id, side) => {
+      const node = $(id);
+      const rule = s.dao.ruling === side;
+      node.classList.toggle('rule', rule);
+      node.replaceChildren(make('b', '', names[side]), make('div', '', rule ? `thống trị x${mult}` : `gõ "${keywords[side][0]}" để nhập`));
+    };
+    box('dao-chinh', 'chinh');
+    box('dao-ma', 'ma');
+  }
+
+  let tribAvatar = null;
+
+  function renderTribulation(s) {
+    const trib = s.tribulation;
+    const box = $('trib');
+    box.classList.toggle('show', Boolean(trib));
+    if (!trib) return;
+    if (!tribAvatar) {
+      tribAvatar = createAvatar();
+      box.querySelector('.hero').append(tribAvatar);
+    }
+    updateAvatar(tribAvatar, trib.player, { withRank: false, vip: true });
+    box.querySelector('.head .t').textContent = `⚡ LÔI KIẾP · ${trib.next}`;
+    nameWithPhoto(box.querySelector('.head .n'), trib.player, `${clip(trib.player.name, 18)} đang độ kiếp`);
+    box.querySelector('.meter .bar i').style.width = `${trib.chance}%`;
+    box.querySelector('.meter .txt').textContent = `Tỉ lệ thành công ${trib.chance}% · còn ${secs(trib.endsAt - nowServer())}s · ${fmt(trib.helpers)} đạo hữu hộ pháp`;
+    box.querySelector('.meter .hint').textContent = `Gõ "${config.tribulation.helpKeywords[0]}" · thả tim · tặng quà để tăng tỉ lệ${trib.queue ? ` · ${trib.queue} người đang chờ` : ''}`;
+  }
+
+  // ---------- Thẻ hồ sơ ----------
+
+  function renderCard(s) {
+    const card = s.card;
+    const box = $('card');
+    box.classList.toggle('show', Boolean(card));
+    if (!card) return;
+    const compact = Boolean(s.boss);
+    box.classList.toggle('compact', compact);
+    const key = `${card.id}|${card.until}|${compact}`;
+    if (box._key === key) return;
+    box._key = key;
+    const kv = (label, value) => {
+      const row = make('div');
+      row.append(`${label}: `, make('b', '', value));
+      return row;
+    };
+    const missing = card.next ? `Còn ${fmt(card.next.missing)} tu vi để lên ${card.next.name}` : 'Đã viên mãn';
+    const rankText = card.sessionRank ? `Hạng ${card.sessionRank} Thiên Kiêu` : 'Chưa vào Thiên Kiêu Bảng';
+    if (compact) {
+      box.replaceChildren(make('h3', '', clip(card.name, 22)), kv('Cảnh giới', card.realm), make('div', '', card.status ?? missing), make('div', '', rankText));
+      return;
+    }
+    const tags = [card.rank, card.faction ? `phe ${card.faction}` : 'chưa chọn phe', ...(card.dao ? [card.dao] : []), ...(card.power ? [`chiến lực ${fmt(card.power)}`] : []), ...card.positions, ...card.titles];
+    const left = make('div');
+    const pct = card.next ? Math.min((card.total / card.next.min) * 100, 100) : 100;
+    const bar = make('div', 'bar');
+    const fill = make('i');
+    fill.style.width = `${pct}%`;
+    bar.append(fill);
+    left.append(
+      kv('Cảnh giới', card.realm),
+      make('div', '', card.next ? `Tu vi ${fmt(card.total)}/${fmt(card.next.min)} → ${card.next.name}` : `Tu vi ${fmt(card.total)}`),
+      bar,
+      kv('Linh căn', `${card.rootName} · x${card.mult}`),
+      kv('Hệ chủ', card.main),
+      kv('Các hệ', card.elements.join(', ') || '—'),
+    );
+    const right = make('div');
+    right.append(
+      kv('Thiên Kiêu', card.sessionRank ? `hạng ${card.sessionRank} · ${fmt(card.session)}` : `${fmt(card.session)} tu vi phiên`),
+      ...card.quests.map((q) => kv(q.name, q.done >= q.need ? '✔' : `${fmt(q.done)}/${fmt(q.need)}`)),
+      kv('Rương ngày', card.chest ? 'đã mở' : 'chưa mở'),
+      kv('Chuỗi điểm danh', `${card.streak} ngày`),
+    );
+    if (card.artifact) {
+      const art = card.artifact;
+      left.append(kv('Pháp bảo', `${art.name} · ${art.grade}${art.need === null ? '' : ` · ${art.progress}/${art.need} (còn ${art.left} lượt)`}`));
+    }
+    if (card.beast) {
+      const bs = card.beast;
+      right.append(kv('Dị thú', `${bs.name} · ${bs.tier} cấp ${bs.level}${bs.need ? ` (${bs.exp}/${bs.need})` : ''} · có ${bs.owned} con`));
+    }
+    if (card.wings !== undefined) right.append(kv('Thiên dực', card.wings ? `cấp ${card.wings}` : 'chưa có'));
+    if (card.status) left.append(make('div', 'status', card.status));
+    if (card.buffs) left.append(make('div', 'status', card.buffs.join(' · ')));
+    const cols = make('div', 'cols');
+    cols.append(left, right);
+    box.replaceChildren(
+      make('h3', '', `${clip(card.name, 18)} · ${tags.join(' · ')}`),
+      cols,
+      make('div', 'tip', `${missing} · thả tim, bình luận, tặng quà`),
+    );
+  }
+
+  // ---------- Thông báo lớn, Truyền Tin ----------
+
+  function renderBanner(note) {
+    const banner = $('banner');
+    banner.classList.toggle('show', Boolean(note));
+    banner.classList.toggle('heavenRoot', note?.kind === 'heavenRoot');
+    if (note && banner.textContent !== note.text) banner.textContent = note.text;
+  }
+
+  function renderFeed(feed) {
+    const box = $('feed');
+    const key = feed.map((e) => e.seq).join(',');
+    if (box._key !== key) {
+      box._key = key;
+      box.replaceChildren(...feed.map((entry) => {
+        const line = make('div', `k-${entry.kind}`, `${FEED_ICONS[entry.kind] ?? '•'} ${entry.text}`);
+        line.dataset.at = entry.at;
+        return line;
+      }));
+    }
+    for (const line of box.children) line.classList.toggle('fresh', nowServer() - Number(line.dataset.at) < FRESH_MS);
+  }
+
+  // ---------- Kết nối ----------
+
+  function render(s) {
+    state = s;
+    serverSkew = s.now - Date.now();
+    $('idle').classList.toggle('show', !s.session.active);
+    renderElders(s.elders);
+    renderSeats(s.seats);
+    renderPanels(s);
+    renderStrip(s);
+    renderHall(s.hall);
+    renderBoss(s);
+    renderAward(s);
+    renderEventBanner(s);
+    renderTribulation(s);
+    renderDuel(s);
+    renderDao(s);
+    renderCard(s);
+    renderBanner(s.notification);
+    renderFeed(s.feed);
+    window.dispatchEvent(new CustomEvent('game-state', { detail: s }));
+  }
+
+  function setDisconnected(flag) {
+    $('dot').classList.toggle('show', flag);
+  }
+
+  function connect() {
+    const ws = new WebSocket(`ws://${location.host}/ws`);
+    let tiktok = 'off';
+    ws.onopen = () => setDisconnected(false);
+    ws.onclose = () => {
+      setDisconnected(true);
+      setTimeout(connect, 2000);
+    };
+    ws.onmessage = ({ data }) => {
+      const message = JSON.parse(data);
+      switch (message.t) {
+        case 'hello':
+          if (!config) {
+            config = message.config;
+            buildElders();
+            buildSeats();
+          }
+          tiktok = message.tiktok;
+          setDisconnected(tiktok === 'disconnected');
+          render(message.state);
+          window.dispatchEvent(new CustomEvent('game-audio', { detail: message }));
+          break;
+        case 'audio':
+          window.dispatchEvent(new CustomEvent('game-audio', { detail: message }));
+          break;
+        case 'audioTest':
+          window.dispatchEvent(new CustomEvent('game-audio-test', { detail: message.kind }));
+          break;
+        case 'state':
+          render(message.state);
+          break;
+        case 'tiktok':
+          tiktok = message.status;
+          setDisconnected(tiktok === 'disconnected');
+          break;
+        case 'game':
+          // effects.js lắng nghe để chạy hiệu ứng và âm thanh.
+          if (config) window.dispatchEvent(new CustomEvent('game-event', { detail: message.event }));
+          break;
+      }
+    };
+  }
+
+  // Đếm ngược mượt giữa hai lần máy chủ gửi trạng thái.
+  setInterval(() => {
+    if (!state) return;
+    renderStrip(state);
+    renderBoss(state);
+    renderEventBanner(state);
+    renderTribulation(state);
+    renderDuel(state);
+  }, 250);
+
+  function fitStage() {
+    const scale = Math.min(innerWidth / 1080, innerHeight / 1920);
+    const stage = $('stage');
+    stage.style.transform = `scale(${scale})`;
+    stage.style.left = `${(innerWidth - 1080 * scale) / 2}px`;
+    stage.style.top = `${(innerHeight - 1920 * scale) / 2}px`;
+  }
+
+  addEventListener('resize', fitStage);
+  fitStage();
+  connect();
+</script>
+<script src="effects.js"></script>
+</body>
+</html>
