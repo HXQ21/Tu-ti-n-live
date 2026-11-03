@@ -148,7 +148,9 @@
   #hall .rank { top: 109px; font-size: 12px; line-height: 14px; padding: 0 2px; }
   #hall-status { position: absolute; left: 0; right: 0; top: 1646px; text-align: center; font-size: 15px; color: var(--muted); text-shadow: var(--outline); }
   #hall-status b { color: var(--gold); }
-  #hall.hidden { visibility: hidden; }
+  /* Boss / sự kiện chiếm điện: chỉ làm mờ từng đệ tử (đặt lên con của avatar, không lên #hall, để giữ hòa trộn "screen"). */
+  #hall .avatar > * { transition: opacity .5s, filter .5s; }
+  #hall.dim .avatar > * { opacity: .3; filter: blur(1.5px) grayscale(.5); animation: none !important; }
 
   /* ---------- Truyền Tin ---------- */
   #feed-box { position: absolute; left: 10px; top: 1670px; width: 1060px; height: 244px; background: url(assets/log_panel.webp) center / 100% 100% no-repeat; padding: 30px 58px 24px; }
@@ -172,7 +174,6 @@
   #boss .hp { margin-top: 2px; font-weight: 700; font-size: 15px; }
   #boss .art { position: absolute; left: 290px; top: 92px; width: 500px; height: 470px; }
   #boss .art img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 18px rgba(0, 0, 0, .7)); }
-  #boss.countdown .art img { opacity: .55; }
   #boss.shielded .art { border-radius: 50%; box-shadow: 0 0 0 5px rgba(150, 215, 255, .85), 0 0 60px 18px rgba(120, 200, 255, .55), inset 0 0 70px rgba(120, 200, 255, .55); }
   #boss.frenzy .art img { filter: drop-shadow(0 0 28px rgba(255, 50, 30, .95)) saturate(1.3); }
   #boss .hint { position: absolute; left: 190px; width: 700px; top: 568px; padding: 4px 10px; border-radius: 14px; background: rgba(8, 14, 34, .78); text-align: center; font-weight: 700; font-size: 20px; line-height: 1.3; color: var(--gold); text-shadow: var(--outline); }
@@ -857,12 +858,15 @@
 
   // ---------- Boss, phong thưởng, banner sự kiện ----------
 
+  const hallBusy = { boss: false, event: false };
+
   function renderBoss(s) {
     const { boss } = s;
     const box = $('boss');
     const occupying = boss && boss.phase !== 'award';
     box.classList.toggle('show', Boolean(occupying));
-    $('hall').classList.toggle('hidden', Boolean(boss || s.tribulation || s.duel));
+    hallBusy.boss = Boolean(boss || s.tribulation || s.duel);
+    $('hall').classList.toggle('dim', hallBusy.boss || hallBusy.event);
     if (!occupying) return;
     const file = `assets/boss_${boss.element}.webp`;
     const img = box.querySelector('.art img');
@@ -1000,6 +1004,8 @@
     const rain = s.rain.active ? s.rain : null;
     const special = s.alchemy ? alchemyView(s.alchemy) : s.ladder ? ladderView(s.ladder) : s.secret ? secretView(s.secret) : null;
     banner.classList.toggle('show', Boolean(rain || debate || special));
+    hallBusy.event = Boolean(rain || debate || special);
+    $('hall').classList.toggle('dim', hallBusy.boss || hallBusy.event);
     banner.classList.toggle('debate', Boolean(debate));
     banner.classList.toggle('wide', Boolean(special));
     if (special) {
