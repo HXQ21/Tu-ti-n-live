@@ -60,25 +60,15 @@ Cuối phiên, Top 10 Thiên Kiêu nhận thưởng.
 
 Cần **Node.js bản 24.2 trở lên** (tải ở nodejs.org).
 
-1. Tải repo về, giải nén, mở cửa sổ lệnh trong thư mục game.
-2. Cài thư viện một lần:
+1. Tải repo về, giải nén vào một thư mục trống. Chỉ giữ một bản game trên máy, để không nhầm sang bản cũ cùng tên ở ổ khác.
+2. Trên Windows: bấm đúp `BAT-GAME.bat` trong thư mục game. Lần đầu nó tự cài thư viện. Cửa sổ đen ghi rõ đang chạy bản ở thư mục nào.
 
-```
-npm install
-```
+   Máy khác (hoặc tự gõ lệnh): chạy `npm install` một lần, rồi `npm start`. Trên Windows PowerShell gõ `npm.cmd` thay cho `npm`.
 
-3. Bật game:
+3. Mở `http://localhost:3000` để xem màn hình game.
+4. Mở thêm `http://localhost:3000/sim` để thử bằng **bảng giả lập**. Bấm **Bắt đầu phiên**, rồi **Thêm 50 người chơi ảo**, rồi gọi thử boss hoặc các sự kiện. Cách này không cần live thật.
 
-```
-npm start
-```
-
-4. Mở `http://localhost:3000` để xem màn hình game.
-5. Mở thêm `http://localhost:3000/sim` để thử bằng **bảng giả lập**. Bấm **Bắt đầu phiên**, rồi **Thêm 50 người chơi ảo**, rồi gọi thử boss hoặc các sự kiện. Cách này không cần live thật.
-
-Trên Windows PowerShell, nếu `npm` báo lỗi chặn script thì gõ `npm.cmd` thay cho `npm`.
-
-Muốn live thật: điền username TikTok vào mục `tiktok` trong `config.json`, tắt và bật lại game, rồi đưa `http://127.0.0.1:3000/` vào OBS (nguồn Browser, 1080x1920) hoặc TikTok LIVE Studio. Từng bước có hình dung chi tiết trong các file bên dưới.
+Muốn live thật: bắt đầu live, mở `/sim`, điền ID TikTok ở mục **Kết nối TikTok LIVE** rồi bấm **Kết nối** (ID được lưu vào `config.json`), rồi đưa `http://127.0.0.1:3000/` vào OBS (nguồn Browser, 1080x1920) hoặc TikTok LIVE Studio. Từng bước có hình dung chi tiết trong các file bên dưới.
 
 **Nhớ:** người chơi giả lập lưu chung với người chơi thật. Thử xong, trước khi live thật, hãy xóa thư mục `data` khi game đã tắt.
 

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, test } from 'node:test';
@@ -10,6 +10,7 @@ import {
   createApp,
   loadConfig,
   normalizeTikTokEvent,
+  normalizeTikTokUsername,
   openStore,
   simEvents,
 } from '../server/server.js';
@@ -118,6 +119,7 @@ function fakeConnector(behaviours) {
   class TikTokLiveConnection extends EventEmitter {
     constructor(username, options) {
       super();
+      this.username = username;
       this.options = options;
       created.push(this);
     }
@@ -260,6 +262,51 @@ test('giả lập đi qua máy chủ tới WebSocket, không lộ API key, khở
   const again = createApp({ config: secretConfig, dbPath, log: quiet });
   assert.equal(again.game.snapshot().totalPlayers, 51);
   await again.stop();
+});
+
+test('chuẩn hóa ID TikTok: bỏ @, nhận link, từ chối ký tự lạ', () => {
+  assert.equal(normalizeTikTokUsername('  @Lam.Dong_99 '), 'Lam.Dong_99');
+  assert.equal(normalizeTikTokUsername('https://www.tiktok.com/@lam.dong/live?lang=vi'), 'lam.dong');
+  assert.equal(normalizeTikTokUsername(''), '');
+  assert.equal(normalizeTikTokUsername('   '), '');
+  assert.equal(normalizeTikTokUsername('lâm động'), null);
+  assert.equal(normalizeTikTokUsername('a'.repeat(25)), null);
+  assert.equal(normalizeTikTokUsername(42), null);
+});
+
+test('điền ID TikTok từ bảng điều khiển: kết nối phòng mới, lưu vào config.json, xóa thì tắt', async () => {
+  const dbPath = path.join(dir, 'game.db');
+  const configPath = path.join(dir, 'config.json');
+  writeFileSync(configPath, '{\n  "tiktok": { "username": "", "signApiKey": "BI-MAT", "reconnectSec": 10 },\n  "x": 1\n}\n');
+  const { load, created } = fakeConnector(['room1']);
+  const appConfig = { ...config, tiktok: { username: '', signApiKey: 'BI-MAT', reconnectSec: 10 } };
+  const app = createApp({ config: appConfig, dbPath, configPath, loadConnector: load, log: quiet });
+  const port = await app.start(0);
+  const { ws, messages } = openClient(port);
+  await waitFor(() => messages.some((m) => m.t === 'hello'));
+  assert.equal(messages.find((m) => m.t === 'hello').tiktokUser, '');
+
+  assert.equal((await postSim(port, { action: 'tiktok', username: 'lâm động' })).status, 400);
+  assert.equal(created.length, 0);
+
+  assert.equal((await postSim(port, { action: 'tiktok', username: '@chu.phong' })).status, 200);
+  await waitFor(() => messages.some((m) => m.t === 'tiktok' && m.status === 'connected'));
+  assert.equal(created.length, 1);
+  assert.equal(created[0].username, 'chu.phong');
+  assert.equal(messages.findLast((m) => m.t === 'tiktok').user, 'chu.phong');
+  assert.ok(app.game.ctx.session.active);
+
+  const saved = readFileSync(configPath, 'utf8');
+  assert.equal(JSON.parse(saved).tiktok.username, 'chu.phong');
+  assert.equal(JSON.parse(saved).tiktok.signApiKey, 'BI-MAT');
+  assert.ok(saved.includes('"x": 1'), 'giữ nguyên phần còn lại của file');
+
+  assert.equal((await postSim(port, { action: 'tiktok', username: '' })).status, 200);
+  await waitFor(() => messages.findLast((m) => m.t === 'tiktok').status === 'off');
+  assert.equal(JSON.parse(readFileSync(configPath, 'utf8')).tiktok.username, '');
+
+  ws.terminate();
+  await app.stop();
 });
 
 test('bật tắt âm thanh: phát tới giao diện, khởi động lại vẫn giữ', async () => {

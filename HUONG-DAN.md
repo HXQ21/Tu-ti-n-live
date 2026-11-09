@@ -8,15 +8,12 @@ Trạng thái kiểm thử: game đã chạy tốt bằng giả lập trên máy
 
 Cần có Node.js từ bản 24.2 trở lên. Máy hiện tại đã có sẵn (24.21). Nếu chuyển sang máy khác, xem Phần H.
 
-1. Mở **PowerShell** (bấm phím Windows, gõ `PowerShell`, Enter).
-2. Chạy hai lệnh sau:
+1. Vào thư mục game, **bấm đúp file `BAT-GAME.bat`**. File này luôn chạy đúng bản game nằm cùng thư mục với nó, nên không bị nhầm sang thư mục cùng tên ở ổ khác. Lần đầu nó tự cài thư viện.
+2. Xem dòng `Dang bat game tu thu muc: ...` để chắc đang chạy đúng bản.
 
-```
-cd "D:\game live"
-npm.cmd start
-```
+   Cách tự gõ lệnh (nếu cần): mở PowerShell, `cd` vào **đúng** thư mục game trên máy bạn, rồi gõ `npm.cmd start`. Phải gõ `npm.cmd`, không gõ `npm`: PowerShell mặc định chặn `npm` với lỗi `running scripts is disabled on this system`.
 
-Phải gõ `npm.cmd`, không gõ `npm`: PowerShell mặc định chặn `npm` với lỗi `running scripts is disabled on this system`.
+   Các đường dẫn `D:\game live\...` trong file này là ví dụ trên máy gốc. Trên máy bạn, thay bằng thư mục game của bạn (ví dụ `C:\Users\<tên>\Downloads\Tu-ti-n-live-master`).
 
 3. Khi thấy dòng `Bảng giả lập: http://127.0.0.1:3000/sim` là đã chạy.
 4. **Giữ nguyên cửa sổ này suốt buổi live.** Đóng nó là game dừng.
@@ -73,8 +70,12 @@ Việc xóa này không khôi phục được. Về sau, khi đã có người c
 
 ## C. Điền tài khoản TikTok
 
+**Cách dễ nhất (không cần tắt game):** mở bảng giả lập `http://127.0.0.1:3000/sim`. Ở mục **Kết nối TikTok LIVE**, điền ID (`@ten_cua_ban`, hoặc dán link `tiktok.com/@ten_cua_ban/live`), bấm **Kết nối**. Game tự kết nối và ghi ID vào `config.json` cho lần bật sau. Bấm **Tắt kết nối** để quay về chỉ giả lập. Đổi sang ID khác thì game bắt đầu một phiên mới.
+
+**Cách sửa file (nếu cần):**
+
 1. Tắt game.
-2. Chuột phải `D:\game live\config.json`, chọn **Open with > Notepad**.
+2. Chuột phải `config.json` trong thư mục game, chọn **Open with > Notepad**.
 3. Sửa dòng đầu tiên, điền username của bạn vào giữa hai dấu ngoặc kép. Ví dụ:
 
 ```

@@ -40,6 +40,16 @@
 </header>
 
 <main>
+  <section class="wide">
+    <h2>Kết nối TikTok LIVE</h2>
+    <form class="row" id="ttForm">
+      <input type="text" id="ttUser" placeholder="ID TikTok của chủ phòng, ví dụ @tenban hoặc link tiktok.com/@tenban/live" aria-label="ID TikTok" autocomplete="off" spellcheck="false">
+      <button type="submit" class="big">Kết nối</button>
+      <button type="button" id="ttOff">Tắt kết nối</button>
+    </form>
+    <div class="row"><label id="ttNote">Phải đang live thì mới kết nối được. ID được lưu lại cho lần bật game sau.</label></div>
+  </section>
+
   <section>
     <h2>Người chơi</h2>
     <div class="row"><input type="text" id="name" value="Đạo hữu A" aria-label="Tên người chơi"></div>
@@ -218,9 +228,17 @@
     $('bgmNote').textContent = hasBgm ? '' : 'Chưa có nhạc nền: hãy đặt file public/sounds/bgm.mp3 rồi tải lại giao diện.';
   }
 
-  function setTiktok(status) {
-    const labels = { connected: 'TikTok: đã kết nối', disconnected: 'TikTok: mất kết nối, đang thử lại', off: 'TikTok: tắt (chỉ giả lập)' };
+  let tiktokUser = '';
+  const showTiktokUser = () => {
+    // Không ghi đè khi người dùng đang gõ dở.
+    if (document.activeElement !== $('ttUser') || !$('ttUser').value) $('ttUser').value = tiktokUser ? `@${tiktokUser}` : '';
+  };
+  function setTiktok(status, user) {
+    if (user !== undefined) tiktokUser = user;
+    const at = user ? ` @${user}` : '';
+    const labels = { connected: `TikTok${at}: đã kết nối`, disconnected: `TikTok${at}: chưa vào được phòng live, đang thử lại`, off: 'TikTok: tắt (chỉ giả lập)' };
     $('ttText').textContent = labels[status] ?? status;
+    showTiktokUser();
     $('ttDot').className = `dot ${status === 'connected' ? 'ok' : status === 'disconnected' ? 'bad' : ''}`;
   }
 
@@ -240,7 +258,7 @@
       switch (message.t) {
         case 'hello':
           buildControls(message.config);
-          setTiktok(message.tiktok);
+          setTiktok(message.tiktok, message.tiktokUser);
           showAudio(message);
           showState(message.state);
           break;
@@ -251,7 +269,7 @@
           showState(message.state);
           break;
         case 'tiktok':
-          setTiktok(message.status);
+          setTiktok(message.status, message.user);
           break;
         case 'event':
           addLog(describe(message.event));
@@ -265,7 +283,29 @@
     };
   }
 
-  $('sendChat').addEventListener('click', () => sim('chat', { text: $('text').value }));
+  async function setTiktokUser(username) {
+    const res = await fetch('/api/sim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'tiktok', username }),
+    }).catch(() => null);
+    if (!res) return addLog('LỖI: không gọi được máy chủ');
+    if (!res.ok) {
+      $('ttNote').textContent = 'ID không hợp lệ: chỉ gồm chữ không dấu, số, dấu chấm, gạch dưới (tối đa 24 ký tự).';
+      return;
+    }
+    $('ttUser').blur();
+    showTiktokUser();
+    $('ttNote').textContent = username.trim() ? 'Đang kết nối… Phải đang live thì mới vào được phòng.' : 'Đã tắt kết nối TikTok.';
+    addLog(username.trim() ? `Đổi ID TikTok: ${username.trim()}` : 'Tắt kết nối TikTok');
+  }
+  $('ttForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    setTiktokUser($('ttUser').value);
+  });
+  $('ttOff').addEventListener('click', () => setTiktokUser(''));
+
+  $('sendChat').addEventListener('click',() => sim('chat', { text: $('text').value }));
   $('text').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sim('chat', { text: $('text').value });
   });

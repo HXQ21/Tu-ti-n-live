@@ -93,6 +93,26 @@ export function normalizeTikTokEvent(type, data) {
 
 // ---------- Kết nối TikTok ----------
 
+const TIKTOK_USERNAME = /^[A-Za-z0-9._]{1,24}$/;
+
+// Nhận "@ten", "ten" hoặc link tiktok.com/@ten/live. Trả '' khi bỏ trống (tắt kết nối), null khi sai.
+export function normalizeTikTokUsername(input) {
+  if (typeof input !== 'string') return null;
+  let name = input.trim();
+  if (!name) return '';
+  name = name.match(/tiktok\.com\/@([^/?#\s]+)/i)?.[1] ?? name;
+  name = name.replace(/^@/, '');
+  return TIKTOK_USERNAME.test(name) ? name : null;
+}
+
+// Chỉ thay giá trị username, giữ nguyên định dạng và chú thích còn lại của config.json.
+function saveTikTokUsername(file, username) {
+  const text = readFileSync(file, 'utf8');
+  const pattern = /("tiktok"\s*:\s*\{[^}]*?"username"\s*:\s*)"(?:[^"\\]|\\.)*"/;
+  if (!pattern.test(text)) throw new Error('không tìm thấy tiktok.username trong config.json');
+  writeFileSync(file, text.replace(pattern, (_, head) => head + JSON.stringify(username)));
+}
+
 function discard(connection) {
   if (!connection) return;
   connection.removeAllListeners();
@@ -393,13 +413,14 @@ function publicFile(urlPath, publicDir) {
   return file.startsWith(publicDir + path.sep) ? file : null;
 }
 
-export function createApp({ config, dbPath, publicDir = PUBLIC_DIR, loadConnector, fetchImpl, log = console }) {
+export function createApp({ config, dbPath, configPath, publicDir = PUBLIC_DIR, loadConnector, fetchImpl, log = console }) {
   const store = openStore(dbPath);
   const avatarDir = path.join(path.dirname(dbPath), 'avatars');
   const { tiktok: _tiktok, server: _server, ...publicConfig } = config; // Không gửi API key ra trình duyệt.
   let tiktokStatus = 'off';
   let botCount = 0;
   let tiktok = null;
+  let started = false;
   let disconnectedAt = null;
   let stopping = null;
   const timers = [];
@@ -460,8 +481,35 @@ export function createApp({ config, dbPath, publicDir = PUBLIC_DIR, loadConnecto
   const setTiktokStatus = (status) => {
     if (status === 'disconnected' && tiktokStatus === 'connected') disconnectedAt = Date.now();
     tiktokStatus = status;
-    broadcast({ t: 'tiktok', status });
+    broadcast({ t: 'tiktok', status, user: config.tiktok.username });
   };
+
+  function connectLive() {
+    tiktok?.stop();
+    tiktok = connectTikTok({
+      config,
+      onEvent: handleEvent,
+      onRoom: (id) => guarded('bắt đầu phiên', () => onRoom(id)),
+      onStatus: setTiktokStatus,
+      loadConnector,
+      log,
+    });
+  }
+
+  // Đổi ID ngay trên bảng điều khiển, không cần sửa config.json rồi bật lại game.
+  function setTiktokUser(input) {
+    const username = normalizeTikTokUsername(input);
+    if (username === null) return false;
+    if (username !== config.tiktok.username) {
+      config.tiktok = { ...config.tiktok, username };
+      // Phòng của người khác: bắt đầu phiên mới thay vì nối tiếp phiên cũ.
+      disconnectedAt = 0;
+      if (configPath) guarded('lưu ID TikTok vào config.json', () => saveTikTokUsername(configPath, username));
+      log.log(username ? `[tiktok] đổi sang @${username}` : '[tiktok] đã tắt kết nối');
+    }
+    if (started) connectLive();
+    return true;
+  }
 
   // Kết nối live thành công tự bắt đầu phiên. Mất kết nối dưới 30 phút vẫn tính cùng một phiên.
   function onRoom(roomId) {
@@ -502,6 +550,8 @@ export function createApp({ config, dbPath, publicDir = PUBLIC_DIR, loadConnecto
         store.save({ players: [], meta: { audio } });
         broadcast({ t: 'audio', ...audioState() });
         return true;
+      case 'tiktok':
+        return setTiktokUser(body.username);
       case 'audioTest':
         if (!AUDIO_TEST_KINDS.includes(body.kind)) return false;
         broadcast({ t: 'audioTest', kind: body.kind });
@@ -578,7 +628,7 @@ export function createApp({ config, dbPath, publicDir = PUBLIC_DIR, loadConnecto
   }
 
   wss.on('connection', (client) => {
-    client.send(JSON.stringify({ t: 'hello', config: publicConfig, state: game.snapshot(), tiktok: tiktokStatus, ...audioState() }));
+    client.send(JSON.stringify({ t: 'hello', config: publicConfig, state: game.snapshot(), tiktok: tiktokStatus, tiktokUser: config.tiktok.username, ...audioState() }));
   });
 
   return {
@@ -593,14 +643,8 @@ export function createApp({ config, dbPath, publicDir = PUBLIC_DIR, loadConnecto
           timers.push(setInterval(() => guarded('tick', () => game.tick()), TICK_MS));
           timers.push(setInterval(() => broadcast({ t: 'state', state: game.snapshot() }), config.leaderboard.refreshMs));
           timers.push(setInterval(save, config.server.autosaveSec * 1000));
-          tiktok = connectTikTok({
-            config,
-            onEvent: handleEvent,
-            onRoom: (id) => guarded('bắt đầu phiên', () => onRoom(id)),
-            onStatus: setTiktokStatus,
-            loadConnector,
-            log,
-          });
+          started = true;
+          connectLive();
           resolve(httpServer.address().port);
         });
       });
@@ -610,6 +654,7 @@ export function createApp({ config, dbPath, publicDir = PUBLIC_DIR, loadConnecto
 
     stop() {
       stopping ??= new Promise((resolve) => {
+        started = false;
         timers.forEach(clearInterval);
         tiktok?.stop();
         save();
@@ -634,7 +679,11 @@ if (import.meta.main) {
     console.error(`File config.json bị sai định dạng, hãy kiểm tra dấu phẩy và dấu ngoặc kép. Chi tiết: ${err.message}`);
     process.exit(1);
   }
-  const app = createApp({ config, dbPath: process.env.DB_PATH || path.join(ROOT, 'data', 'game.db') });
+  const app = createApp({
+    config,
+    configPath: path.join(ROOT, 'config.json'),
+    dbPath: process.env.DB_PATH || path.join(ROOT, 'data', 'game.db'),
+  });
 
   const quit = async (code) => {
     await app.stop();
@@ -654,7 +703,7 @@ if (import.meta.main) {
     const base = `http://${config.server.host}:${port}`;
     console.log(`Giao diện (OBS / TikTok LIVE Studio): ${base}/`);
     console.log(`Bảng giả lập: ${base}/sim`);
-    if (!config.tiktok.username) console.log('Chưa điền tiktok.username trong config.json: chỉ chạy giả lập.');
+    if (!config.tiktok.username) console.log('Chưa có ID TikTok: điền trong Bảng giả lập (mục Kết nối TikTok) hoặc config.json. Hiện chỉ chạy giả lập.');
   } catch (err) {
     console.error(
       err.code === 'EADDRINUSE'
