@@ -208,11 +208,14 @@ export function createBoss(ctx) {
   function flee() {
     flushDamage();
     const { step, max } = cfg.enrage;
+    const before = enrage;
     enrage = Math.min(Math.round((enrage + step) * 10) / 10, max);
-    const text = 'Boss sẽ trở lại mạnh hơn!';
+    // step = 0 trong config: máu boss không tăng dù không bị hạ.
+    const stronger = enrage > before;
+    const text = stronger ? 'Boss sẽ trở lại mạnh hơn!' : 'Boss sẽ trở lại!';
     ctx.emit({ kind: 'bossEnd', result: 'fled', element: boss.element, enrage, text });
     ctx.notify('bossDown', `Boss bỏ chạy · ${text}`);
-    ctx.log({ kind: 'boss', text: `Boss bỏ chạy · cường hóa x${enrage.toFixed(1)}` });
+    ctx.log({ kind: 'boss', text: stronger ? `Boss bỏ chạy · cường hóa x${enrage.toFixed(1)}` : 'Boss bỏ chạy' });
     boss = null;
     ctx.schedule.finished('boss');
   }
@@ -378,7 +381,8 @@ export function createBoss(ctx) {
       state.enrage = enrage;
     },
     load(data) {
-      enrage = data.enrage ?? cfg.enrage.start;
+      // Giới hạn theo config hiện tại: hạ "max" thì mức cường hóa đã lưu từ trước cũng hạ theo.
+      enrage = Math.min(Math.max(data.enrage ?? cfg.enrage.start, cfg.enrage.start), cfg.enrage.max);
     },
     save() {
       return { enrage };

@@ -113,7 +113,7 @@
   "boss": {
     "countdownSec": 60, "durationMin": 5,
     "baseHp": 5000, "hpPerPlayer": 500,
-    "enrage": { "start": 1.0, "step": 0.2, "max": 2.0 },
+    "enrage": { "start": 1.0, "step": 0, "max": 1.0 },
     "damage": {
       "attack": 10, "attackCooldownSec": 3,
       "perLike": 1, "share": 200, "perDiamond": 20,

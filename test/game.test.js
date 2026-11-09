@@ -12,10 +12,10 @@ const START = Date.UTC(2026, 10, 2, 3, 0, 0);
 
 // ---------- Công cụ ----------
 
-function setup({ session = true } = {}) {
+function setup({ session = true, cfg = config } = {}) {
   const ctx = { t: START, rolls: [], events: [] };
   ctx.game = createGame({
-    config,
+    config: cfg,
     now: () => ctx.t,
     random: () => (ctx.rolls.length ? ctx.rolls.shift() : 0.5),
     emit: (event) => ctx.events.push(event),
@@ -371,8 +371,29 @@ test('công thức sát thương: khắc chế, bị khắc, trung tính, Thiên
   assert.ok(Math.abs(damageOf(high, 10, 'kim').value - 18) < 1e-9, 'Chân Tiên x1.8');
 });
 
-test('máu boss = (5.000 + 500 × người có mặt) × cường hóa; bỏ chạy tăng 0.2, tối đa 2.0', () => {
+// Mặc định: boss bỏ chạy không làm tăng máu lần sau.
+test('máu boss không tự tăng khi boss bỏ chạy (cấu hình mặc định)', () => {
   const ctx = setup();
+  for (const id of ['a', 'b', 'c']) add(ctx, id);
+  assert.equal(startFight(ctx).maxHp, 6500);
+  ctx.advance(6 * MIN, 5 * SEC);
+  const fled = ctx.events.find((e) => e.kind === 'bossEnd');
+  assert.equal(fled.result, 'fled');
+  assert.ok(!fled.text.includes('mạnh hơn'));
+  assert.equal(ctx.game.snapshot().enrage, 1);
+  for (const id of ['a', 'b', 'c']) chat(ctx, id, 'x');
+  assert.equal(startFight(ctx).maxHp, 6500);
+});
+
+test('dữ liệu cũ đã lưu cường hóa cao: bị giới hạn theo config', () => {
+  const ctx = setup({ session: false });
+  ctx.game.load({ players: [], meta: { boss: { enrage: 1.6 } } });
+  assert.equal(ctx.game.snapshot().enrage, 1);
+});
+
+test('nếu bật cường hóa trong config: bỏ chạy tăng 0.2, tối đa 2.0', () => {
+  const cfg = { ...config, boss: { ...config.boss, enrage: { start: 1.0, step: 0.2, max: 2.0 } } };
+  const ctx = setup({ cfg });
   for (const id of ['a', 'b', 'c']) add(ctx, id);
   const boss = startFight(ctx);
   assert.equal(boss.maxHp, 6500);
