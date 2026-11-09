@@ -9,7 +9,7 @@ Trạng thái kiểm thử: game đã chạy tốt bằng giả lập trên máy
 Cần có Node.js từ bản 24.2 trở lên. Máy hiện tại đã có sẵn (24.21). Nếu chuyển sang máy khác, xem Phần H.
 
 1. Vào thư mục game, **bấm đúp file `BAT-GAME.bat`**. File này luôn chạy đúng bản game nằm cùng thư mục với nó, nên không bị nhầm sang thư mục cùng tên ở ổ khác. Lần đầu nó tự cài thư viện.
-2. Xem dòng `Dang bat game tu thu muc: ...` để chắc đang chạy đúng bản.
+2. Xem dòng `Thu muc game: ...` để chắc đang chạy đúng bản.
 
    Cách tự gõ lệnh (nếu cần): mở PowerShell, `cd` vào **đúng** thư mục game trên máy bạn, rồi gõ `npm.cmd start`. Phải gõ `npm.cmd`, không gõ `npm`: PowerShell mặc định chặn `npm` với lỗi `running scripts is disabled on this system`.
 
