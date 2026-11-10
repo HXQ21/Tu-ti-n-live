@@ -6,137 +6,370 @@
 <title>Quản trị - Tiên Môn Vấn Đạo</title>
 <link rel="icon" href="data:,">
 <style>
-  :root { --bg: #10151f; --panel: #1a2230; --line: #2d3a4f; --text: #e8edf5; --muted: #93a1b5; --gold: #e6c469; --ok: #4cd964; --bad: #ff5b4d; }
+  :root {
+    --bg: #0d0b14;
+    --side: #12101b;
+    --panel: #17141f;
+    --panel-2: #1d1928;
+    --line: #2a2438;
+    --line-2: #3a3150;
+    --text: #ece8f4;
+    --muted: #8e86a3;
+    --accent: #b88cff;
+    --accent-2: #8b5cf6;
+    --accent-bg: #2a1f42;
+    --teal: #5ee0c0;
+    --teal-ink: #0b2a24;
+    --gold: #f0cf7a;
+    --gold-bg: #3a2f14;
+    --ok: #4ade80;
+    --bad: #ff6b6b;
+    --bad-bg: #4a1d2a;
+    --radius: 12px;
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 "Segoe UI", system-ui, sans-serif; }
-  header { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); }
-  h1 { margin: 0; font-size: 18px; color: var(--gold); }
-  h2 { margin: 0 0 10px; font-size: 14px; color: var(--gold); }
-  .status { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
-  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
-  .dot.ok { background: var(--ok); }
-  .dot.bad { background: var(--bad); }
-  main { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; padding: 12px 16px; }
-  section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
-  .wide { grid-column: 1 / -1; }
-  .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
-  input[type=text], input[type=number] { background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font: inherit; min-width: 0; }
-  input[type=text] { flex: 1; }
-  input[type=number] { width: 90px; }
-  button { background: #27354b; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 7px 11px; font: inherit; cursor: pointer; }
-  button:hover { border-color: var(--gold); }
-  button.big { background: #4a3a14; border-color: var(--gold); }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: radial-gradient(1200px 600px at 80% -10%, #22163a 0%, transparent 60%), var(--bg);
+    color: var(--text);
+    font: 14px/1.5 "Segoe UI", system-ui, sans-serif;
+  }
+  button, input { font: inherit; color: inherit; }
+  svg.i { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- Khung ---------- */
+  .app { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100vh; }
+  aside {
+    position: sticky; top: 0; height: 100vh;
+    display: flex; flex-direction: column; gap: 18px;
+    padding: 18px 12px; background: var(--side); border-right: 1px solid var(--line);
+  }
+  .brand { padding: 2px 10px; }
+  .brand b { display: block; font-size: 16px; letter-spacing: .3px; }
+  .brand small { color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; }
+  .nav-title { margin: 6px 10px 0; color: var(--muted); font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; }
+  nav { display: flex; flex-direction: column; gap: 4px; }
+  nav button {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    padding: 11px 12px; border: 1px solid transparent; border-radius: 10px;
+    background: none; color: var(--muted); text-align: left; cursor: pointer;
+  }
+  nav button .n { font-size: 10.5px; width: 16px; opacity: .7; }
+  nav button:hover { color: var(--text); background: var(--panel); }
+  nav button[aria-current="true"] {
+    color: var(--text); font-weight: 600;
+    background: linear-gradient(90deg, var(--accent-bg), #1f1830);
+    border-color: var(--line-2);
+    box-shadow: inset 3px 0 0 var(--accent), 0 0 18px rgba(139, 92, 246, .15);
+  }
+  nav button[aria-current="true"] .n { color: var(--accent); opacity: 1; }
+  .side-foot { margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+
+  main { min-width: 0; padding: 18px 28px 40px; display: flex; flex-direction: column; gap: 16px; }
+
+  /* ---------- Đầu trang ---------- */
+  .top { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-end; justify-content: space-between; }
+  .crumb { color: var(--muted); font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; }
+  .top h1 { margin: 2px 0 0; font-size: 28px; line-height: 1.2; }
+  .top p { margin: 4px 0 0; color: var(--muted); }
+  .quick { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  /* ---------- Nút ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 14px; border-radius: 10px; cursor: pointer;
+    background: var(--panel-2); border: 1px solid var(--line-2); color: var(--text);
+    transition: border-color .15s, box-shadow .15s, transform .05s;
+  }
+  .btn:hover { border-color: var(--accent); box-shadow: 0 0 14px rgba(184, 140, 255, .18); }
+  .btn:active { transform: translateY(1px); }
+  .btn.primary { background: linear-gradient(180deg, #c7a2ff, #9a6bf5); border-color: #c7a2ff; color: #1a0f2e; font-weight: 600; }
+  .btn.teal { background: linear-gradient(180deg, #7bf0d2, #43c9a8); border-color: #7bf0d2; color: var(--teal-ink); font-weight: 600; }
+  .btn.gold { background: var(--gold-bg); border-color: #6b5622; color: var(--gold); font-weight: 600; }
+  .btn.danger { background: var(--bad-bg); border-color: #7a2f45; color: #ffd0d8; font-weight: 600; }
+  .btn.ghost { background: none; color: var(--muted); }
+  .chip { padding: 7px 11px; border-radius: 999px; font-size: 13px; }
+  .toggle { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 10px; border: 1px solid #6b5622; background: var(--gold-bg); color: var(--gold); font-weight: 600; cursor: pointer; }
+  .toggle input { accent-color: var(--gold); margin: 0; }
+
+  /* ---------- Thanh kết nối ---------- */
+  .bar {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel);
+  }
+  .bar form { display: contents; }
+  .bar input[type=text] { flex: 1 1 260px; }
+  .bar .note { flex-basis: 100%; color: var(--muted); font-size: 12.5px; }
+
+  .status { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12.5px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
+  .dot.ok { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+  .dot.bad { background: var(--bad); box-shadow: 0 0 8px var(--bad); }
+
+  /* ---------- Thẻ số liệu ---------- */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+  .stat { display: flex; align-items: baseline; gap: 10px; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+  .stat b { font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat span { color: var(--muted); font-size: 12.5px; }
+
+  /* ---------- Khối nội dung ---------- */
+  .panel { display: none; flex-direction: column; gap: 16px; }
+  .panel.active { display: flex; }
+  .card { padding: 22px 24px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+  .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+  .eyebrow { color: var(--muted); font-size: 10.5px; letter-spacing: 1.4px; text-transform: uppercase; font-weight: 600; }
+  .card h2 { margin: 4px 0 0; font-size: 19px; }
+  .card h3 { margin: 18px 0 8px; font-size: 13px; color: var(--muted); font-weight: 600; }
+  .card h3:first-child { margin-top: 0; }
+  .tag { padding: 3px 8px; border-radius: 6px; background: var(--accent-bg); color: var(--accent); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .row:last-child { margin-bottom: 0; }
   label { color: var(--muted); }
-  #log { height: 280px; overflow-y: auto; background: var(--bg); border-radius: 6px; padding: 8px; font: 13px/1.5 Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
-  #state { background: var(--bg); border-radius: 6px; padding: 8px; margin: 0; font: 13px/1.5 Consolas, monospace; overflow-x: auto; }
+  label.check { display: inline-flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--panel-2); color: var(--text); cursor: pointer; }
+  label.check input { accent-color: var(--accent); margin: 0; }
+  .hint { color: var(--muted); font-size: 12.5px; }
+
+  input[type=text], input[type=number] {
+    background: #110e19; border: 1px solid var(--line-2); border-radius: 10px;
+    padding: 10px 12px; min-width: 0; outline: none;
+  }
+  input[type=text]:focus, input[type=number]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(184, 140, 255, .15); }
+  input[type=text] { flex: 1; }
+  input[type=number] { width: 100px; }
+
+  #log {
+    height: 60vh; min-height: 280px; overflow-y: auto; padding: 12px;
+    background: #110e19; border: 1px solid var(--line); border-radius: 10px;
+    font: 12.5px/1.6 Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  #state {
+    margin: 0; padding: 12px; max-height: 420px; overflow: auto;
+    background: #110e19; border: 1px solid var(--line); border-radius: 10px;
+    font: 12.5px/1.6 Consolas, monospace;
+  }
+
+  /* ---------- Màn hình hẹp ---------- */
+  @media (max-width: 820px) {
+    .app { grid-template-columns: minmax(0, 1fr); }
+    aside { min-width: 0; position: static; height: auto; flex-direction: column; padding: 12px; gap: 10px; border-right: 0; border-bottom: 1px solid var(--line); }
+    .nav-title, .side-foot { display: none; }
+    nav { flex-direction: row; overflow-x: auto; }
+    nav button { width: auto; white-space: nowrap; }
+    main { padding: 16px; }
+    .top h1 { font-size: 22px; }
+    .card { padding: 18px 16px; }
+  }
 </style>
 </head>
 <body>
-<header>
-  <h1>Bảng quản trị &amp; giả lập</h1>
-  <span class="status"><span class="dot" id="sessDot"></span><span id="sessText">Phiên: chưa rõ</span></span>
-  <span class="status"><span class="dot" id="wsDot"></span><span id="wsText">Đang kết nối máy chủ…</span></span>
-  <span class="status"><span class="dot" id="ttDot"></span><span id="ttText">TikTok: chưa rõ</span></span>
-</header>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-live" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4M7.8 16.2a6 6 0 0 1 0-8.4M19 5a10 10 0 0 1 0 14M5 19A10 10 0 0 1 5 5"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></symbol>
+  <symbol id="i-log" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8M8 9h2"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="m6 4 14 8-14 8z"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 2v10M18.4 6.6a9 9 0 1 1-12.8 0"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></symbol>
+</svg>
 
-<main>
-  <section class="wide">
-    <h2>Kết nối TikTok LIVE</h2>
-    <form class="row" id="ttForm">
-      <input type="text" id="ttUser" placeholder="ID TikTok của chủ phòng, ví dụ @tenban hoặc link tiktok.com/@tenban/live" aria-label="ID TikTok" autocomplete="off" spellcheck="false">
-      <button type="submit" class="big">Kết nối</button>
-      <button type="button" id="ttOff">Tắt kết nối</button>
-    </form>
-    <div class="row"><label id="ttNote">Phải đang live thì mới kết nối được. ID được lưu lại cho lần bật game sau.</label></div>
-  </section>
+<div class="app">
+  <aside>
+    <div class="brand">
+      <b>Tiên Môn Vấn Đạo</b>
+      <small>Phòng điều khiển LIVE</small>
+    </div>
+    <div class="nav-title">Không gian điều khiển</div>
+    <nav id="nav" aria-label="Các mục điều khiển">
+      <button type="button" data-tab="live"><span class="n">01</span><svg class="i"><use href="#i-live"/></svg>Điều khiển LIVE</button>
+      <button type="button" data-tab="viewers"><span class="n">02</span><svg class="i"><use href="#i-users"/></svg>Giả lập người xem</button>
+      <button type="button" data-tab="gifts"><span class="n">03</span><svg class="i"><use href="#i-gift"/></svg>Quà tặng</button>
+      <button type="button" data-tab="audio"><span class="n">04</span><svg class="i"><use href="#i-sound"/></svg>Âm thanh</button>
+      <button type="button" data-tab="log"><span class="n">05</span><svg class="i"><use href="#i-log"/></svg>Nhật ký</button>
+    </nav>
+    <div class="side-foot">
+      <span class="status"><span class="dot" id="wsDot"></span><span id="wsText">Đang kết nối máy chủ…</span></span>
+      <span class="status"><span class="dot" id="sessDot"></span><span id="sessText">Phiên: chưa rõ</span></span>
+    </div>
+  </aside>
 
-  <section>
-    <h2>Người chơi</h2>
-    <div class="row"><input type="text" id="name" value="Đạo hữu A" aria-label="Tên người chơi"></div>
-    <h2>Chat</h2>
-    <div class="row">
-      <input type="text" id="text" placeholder="Nội dung chat" aria-label="Nội dung chat">
-      <button id="sendChat">Gửi</button>
+  <main>
+    <div class="top">
+      <div>
+        <div class="crumb">Tiên Môn Vấn Đạo / Phòng điều khiển LIVE</div>
+        <h1 id="pageTitle">Điều khiển LIVE</h1>
+        <p id="pageDesc">Thiết lập và điều khiển phiên LIVE của bạn.</p>
+      </div>
+      <div class="quick">
+        <button type="button" class="btn primary" data-action="startSession"><svg class="i"><use href="#i-play"/></svg>Bắt đầu phiên</button>
+        <label class="toggle"><input type="checkbox" id="pause"> Tạm dừng sự kiện</label>
+        <button type="button" class="btn danger" data-action="endSession"><svg class="i"><use href="#i-stop"/></svg>Kết thúc phiên</button>
+      </div>
     </div>
-    <div class="row muted-row">
-      <label>Gợi ý: gõ "xuất chiến Băng Hồ" hoặc "ủng hộ [tên]" vào ô chat rồi bấm Gửi.</label>
-    </div>
-    <div class="row" id="keywords"></div>
-  </section>
 
-  <section>
-    <h2>Thả tim, chia sẻ, theo dõi</h2>
-    <div class="row">
-      <input type="number" id="likes" value="100" min="1" aria-label="Số tim">
-      <button id="sendLike">Thả tim</button>
+    <div class="bar">
+      <span class="status"><span class="dot" id="ttDot"></span><span id="ttText">TikTok: chưa rõ</span></span>
+      <form id="ttForm">
+        <input type="text" id="ttUser" placeholder="Nhập ID TikTok, ví dụ @tenban hoặc link tiktok.com/@tenban/live" aria-label="ID TikTok" autocomplete="off" spellcheck="false">
+        <button type="submit" class="btn teal"><svg class="i"><use href="#i-power"/></svg>Kết nối LIVE</button>
+        <button type="button" class="btn ghost" id="ttOff">Ngắt kết nối</button>
+      </form>
+      <span class="note" id="ttNote">Phải đang live thì mới kết nối được. ID được lưu lại cho lần bật game sau.</span>
     </div>
-    <div class="row">
-      <button id="sendShare">Chia sẻ</button>
-      <button id="sendFollow">Theo dõi</button>
-    </div>
-    <h2>Tặng quà</h2>
-    <div class="row">
-      <label for="giftCount">Số lượng</label>
-      <input type="number" id="giftCount" value="1" min="1">
-      <label><input type="checkbox" id="giftCombo"> Combo</label>
-    </div>
-    <div class="row" id="gifts"></div>
-    <div class="row">
-      <label for="giftCoins">Quà tùy chọn</label>
-      <input type="number" id="giftCoins" value="99" min="1"> <label>xu</label>
-      <button id="sendGift">Tặng</button>
-    </div>
-  </section>
 
-  <section>
-    <h2>Phiên live</h2>
-    <div class="row">
-      <button class="big" data-action="startSession">Bắt đầu phiên</button>
-      <button class="big" data-action="endSession">Kết thúc phiên</button>
-      <label><input type="checkbox" id="pause"> Tạm dừng sự kiện</label>
+    <div class="stats">
+      <div class="stat"><b id="stPresent">0</b><span>Người có mặt</span></div>
+      <div class="stat"><b id="stTotal">0</b><span>Tổng người chơi</span></div>
+      <div class="stat"><b id="stSeats">0</b><span>Ghế trong điện</span></div>
+      <div class="stat"><b id="stWaiting">0</b><span>Đang chờ</span></div>
     </div>
-    <h2>Sự kiện (đi qua Lịch Thiên Đạo)</h2>
-    <div class="row">
-      <button class="big" data-action="boss">Gọi boss ngay</button>
-      <button class="big" data-action="rain">Gọi Mưa Linh Thạch ngay</button>
-      <button class="big" data-action="debate">Gọi Luận Đạo ngay</button>
-      <button class="big" data-action="alchemy">Gọi Luyện Đan ngay</button>
-      <button class="big" data-action="ladder">Gọi Đăng Thiên Thê ngay</button>
-      <button class="big" data-action="secret">Gọi Bí Cảnh ngay</button>
-    </div>
-    <div class="row">
-      <button data-action="bots">Thêm 50 người chơi ảo</button>
-      <button data-action="newDay">Chuyển sang ngày mới</button>
-      <button data-action="newWeek">Chuyển sang tuần mới</button>
-    </div>
-    <h2>Âm thanh trên giao diện</h2>
-    <div class="row">
-      <label><input type="checkbox" data-audio="bell" checked> Chuông</label>
-      <label><input type="checkbox" data-audio="thunder" checked> Sấm</label>
-      <label><input type="checkbox" data-audio="drum" checked> Trống</label>
-      <label><input type="checkbox" data-audio="bgm" checked> Nhạc nền</label>
-      <label><input type="checkbox" data-audio="voice" checked> Giọng đọc</label>
-    </div>
-    <div class="row">
-      <button data-test="bell">Thử chuông</button>
-      <button data-test="thunder">Thử sấm</button>
-      <button data-test="drum">Thử trống</button>
-      <button data-test="voice">Thử giọng đọc</button>
-    </div>
-    <div class="row"><label id="bgmNote"></label></div>
-    <h2>Trạng thái</h2>
-    <pre id="state">Chưa có dữ liệu</pre>
-  </section>
 
-  <section class="wide">
-    <h2>Nhật ký sự kiện</h2>
-    <div id="log" role="log"></div>
-  </section>
-</main>
+    <!-- 01 Điều khiển LIVE -->
+    <section class="panel" data-panel="live">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="eyebrow">Sự kiện</div><h2>Gọi sự kiện ngay</h2></div>
+          <span class="tag">Đi qua Lịch Thiên Đạo</span>
+        </div>
+        <div class="row">
+          <button class="btn gold" data-action="boss"><svg class="i"><use href="#i-bolt"/></svg>Gọi boss</button>
+          <button class="btn gold" data-action="rain">Mưa Linh Thạch</button>
+          <button class="btn gold" data-action="debate">Luận Đạo</button>
+          <button class="btn gold" data-action="alchemy">Luyện Đan</button>
+          <button class="btn gold" data-action="ladder">Đăng Thiên Thê</button>
+          <button class="btn gold" data-action="secret">Bí Cảnh</button>
+        </div>
+        <h3>Công cụ thử nghiệm</h3>
+        <div class="row">
+          <button class="btn" data-action="bots">Thêm 50 người chơi ảo</button>
+          <button class="btn" data-action="newDay">Chuyển sang ngày mới</button>
+          <button class="btn" data-action="newWeek">Chuyển sang tuần mới</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div><div class="eyebrow">Trạng thái</div><h2>Tình hình phiên</h2></div>
+          <span class="tag">Cập nhật trực tiếp</span>
+        </div>
+        <pre id="state">Chưa có dữ liệu</pre>
+      </div>
+    </section>
+
+    <!-- 02 Giả lập người xem -->
+    <section class="panel" data-panel="viewers">
+      <div class="grid2">
+        <div class="card">
+          <div class="card-head"><div><div class="eyebrow">Người chơi</div><h2>Chat giả lập</h2></div></div>
+          <h3>Tên người chơi</h3>
+          <div class="row"><input type="text" id="name" value="Đạo hữu A" aria-label="Tên người chơi"></div>
+          <h3>Nội dung chat</h3>
+          <div class="row">
+            <input type="text" id="text" placeholder="Nội dung chat" aria-label="Nội dung chat">
+            <button class="btn primary" id="sendChat">Gửi</button>
+          </div>
+          <p class="hint">Gợi ý: gõ "xuất chiến Băng Hồ" hoặc "ủng hộ [tên]" vào ô chat rồi bấm Gửi.</p>
+          <h3>Từ khóa nhanh</h3>
+          <div class="row" id="keywords"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div><div class="eyebrow">Tương tác</div><h2>Tim, chia sẻ, theo dõi</h2></div></div>
+          <h3>Thả tim</h3>
+          <div class="row">
+            <input type="number" id="likes" value="100" min="1" aria-label="Số tim">
+            <button class="btn primary" id="sendLike">Thả tim</button>
+          </div>
+          <h3>Khác</h3>
+          <div class="row">
+            <button class="btn" id="sendShare">Chia sẻ</button>
+            <button class="btn" id="sendFollow">Theo dõi</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 Quà tặng -->
+    <section class="panel" data-panel="gifts">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="eyebrow">Quà tặng</div><h2>Tặng quà giả lập</h2></div>
+          <span class="tag">Dùng tên ở mục 02</span>
+        </div>
+        <div class="row">
+          <label for="giftCount">Số lượng</label>
+          <input type="number" id="giftCount" value="1" min="1">
+          <label class="check"><input type="checkbox" id="giftCombo"> Combo</label>
+        </div>
+        <h3>Danh sách quà</h3>
+        <div class="row" id="gifts"></div>
+        <h3>Quà tùy chọn</h3>
+        <div class="row">
+          <input type="number" id="giftCoins" value="99" min="1" aria-label="Số xu"> <label>xu</label>
+          <button class="btn primary" id="sendGift">Tặng</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Âm thanh -->
+    <section class="panel" data-panel="audio">
+      <div class="card">
+        <div class="card-head"><div><div class="eyebrow">Âm thanh</div><h2>Âm thanh trên giao diện LIVE</h2></div></div>
+        <h3>Bật / tắt</h3>
+        <div class="row">
+          <label class="check"><input type="checkbox" data-audio="bell" checked> Chuông</label>
+          <label class="check"><input type="checkbox" data-audio="thunder" checked> Sấm</label>
+          <label class="check"><input type="checkbox" data-audio="drum" checked> Trống</label>
+          <label class="check"><input type="checkbox" data-audio="bgm" checked> Nhạc nền</label>
+          <label class="check"><input type="checkbox" data-audio="voice" checked> Giọng đọc</label>
+        </div>
+        <h3>Nghe thử</h3>
+        <div class="row">
+          <button class="btn" data-test="bell">Thử chuông</button>
+          <button class="btn" data-test="thunder">Thử sấm</button>
+          <button class="btn" data-test="drum">Thử trống</button>
+          <button class="btn" data-test="voice">Thử giọng đọc</button>
+        </div>
+        <p class="hint" id="bgmNote"></p>
+      </div>
+    </section>
+
+    <!-- 05 Nhật ký -->
+    <section class="panel" data-panel="log">
+      <div class="card">
+        <div class="card-head"><div><div class="eyebrow">Nhật ký</div><h2>Nhật ký sự kiện</h2></div><span class="tag">300 dòng gần nhất</span></div>
+        <div id="log" role="log"></div>
+      </div>
+    </section>
+  </main>
+</div>
 
 <script>
   const $ = (id) => document.getElementById(id);
   const MAX_LOG_LINES = 300;
+
+  // ---------- Chuyển mục ----------
+  const TABS = {
+    live: ['Điều khiển LIVE', 'Bắt đầu phiên, gọi sự kiện và theo dõi tình hình.'],
+    viewers: ['Giả lập người xem', 'Thử chat, từ khóa, thả tim khi chưa lên live thật.'],
+    gifts: ['Quà tặng', 'Giả lập người xem tặng quà để thử phản ứng của game.'],
+    audio: ['Âm thanh', 'Bật tắt và nghe thử âm thanh trên màn LIVE.'],
+    log: ['Nhật ký', 'Mọi sự kiện đã xảy ra trong phiên.'],
+  };
+  function showTab(tab) {
+    if (!TABS[tab]) tab = 'live';
+    document.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-current', String(b.dataset.tab === tab)));
+    document.querySelectorAll('[data-panel]').forEach((p) => p.classList.toggle('active', p.dataset.panel === tab));
+    [$('pageTitle').textContent, $('pageDesc').textContent] = TABS[tab];
+    if (tab === 'log') $('log').scrollTop = $('log').scrollHeight;
+    try { localStorage.setItem('simTab', tab); } catch {}
+  }
+  document.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
+  let savedTab = 'live';
+  try { savedTab = localStorage.getItem('simTab') || 'live'; } catch {}
+  showTab(savedTab);
 
   function addLog(text) {
     const log = $('log');
@@ -162,6 +395,7 @@
 
   function button(label, onClick) {
     const el = document.createElement('button');
+    el.className = 'btn chip';
     el.textContent = label;
     el.addEventListener('click', onClick);
     return el;
@@ -203,6 +437,10 @@
     $('sessDot').className = `dot ${s.session.active ? 'ok' : ''}`;
     $('sessText').textContent = s.session.active ? `Phiên #${s.session.seq} đang chạy` : 'Chưa có phiên (bấm Bắt đầu phiên)';
     $('pause').checked = s.schedule.paused;
+    $('stPresent').textContent = s.presentPlayers.toLocaleString('vi-VN');
+    $('stTotal').textContent = s.totalPlayers.toLocaleString('vi-VN');
+    $('stSeats').textContent = `${s.hall.seats.filter(Boolean).length}/${s.hall.seats.length}`;
+    $('stWaiting').textContent = s.hall.waiting.toLocaleString('vi-VN');
     const now = s.now;
     const brief = {
       'có mặt / tổng': `${s.presentPlayers} / ${s.totalPlayers}`,
@@ -236,7 +474,7 @@
   function setTiktok(status, user) {
     if (user !== undefined) tiktokUser = user;
     const at = user ? ` @${user}` : '';
-    const labels = { connected: `TikTok${at}: đã kết nối`, disconnected: `TikTok${at}: chưa vào được phòng live, đang thử lại`, off: 'TikTok: tắt (chỉ giả lập)' };
+    const labels = { connected: `TikTok${at}: đã kết nối`, disconnected: `TikTok${at}: chưa vào được phòng live, đang thử lại`, off: 'Chưa kết nối TikTok LIVE (chỉ giả lập)' };
     $('ttText').textContent = labels[status] ?? status;
     showTiktokUser();
     $('ttDot').className = `dot ${status === 'connected' ? 'ok' : status === 'disconnected' ? 'bad' : ''}`;
