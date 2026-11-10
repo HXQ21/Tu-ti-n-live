@@ -7,6 +7,7 @@ import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'node:url';
 import { WebSocket, WebSocketServer } from 'ws';
+import { createAnnouncer, createTts } from './announcer.js';
 import { createGame } from './game.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -16,8 +17,9 @@ const MAX_SIM_COUNT = 100_000;
 const MAX_BODY_BYTES = 64 * 1024;
 const SEEN_MSG_LIMIT = 5000;
 const TICK_MS = 250;
-const TIKTOK_EVENTS = ['chat', 'like', 'gift', 'share', 'follow'];
-const AUDIO_KINDS = ['bell', 'thunder', 'drum', 'bgm', 'voice'];
+const TIKTOK_EVENTS = ['chat', 'like', 'gift', 'share', 'follow', 'member'];
+const AUDIO_KINDS = ['bell', 'thunder', 'drum', 'bgm', 'voice', 'welcome', 'thanks'];
+const TTS_FILE = /^[0-9a-f]{40}\.mp3$/;
 const AUDIO_TEST_KINDS = ['bell', 'thunder', 'drum', 'voice'];
 const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
 const AVATAR_TIMEOUT_MS = 8000;
@@ -85,6 +87,7 @@ export function normalizeTikTokEvent(type, data) {
     }
     case 'share':
     case 'follow':
+    case 'member': // member: người xem vào phòng live
       return { type, user, msgId };
     default:
       return null;
@@ -177,7 +180,8 @@ export function connectTikTok({
         ...(signApiKey ? { signApiKey } : {}),
       });
       for (const type of TIKTOK_EVENTS) {
-        connection.on(WebcastEvent[type.toUpperCase()], (data) => forward(type, data));
+        const name = WebcastEvent[type.toUpperCase()];
+        if (name) connection.on(name, (data) => forward(type, data));
       }
       connection.on(ControlEvent.DISCONNECTED, scheduleRetry);
       connection.on(ControlEvent.ERROR, (err) => log.warn('[tiktok] lỗi:', err?.message ?? err));
@@ -374,6 +378,7 @@ export function simEvents(body, config) {
       return simGift(user, body, config);
     case 'share':
     case 'follow':
+    case 'member':
       return [{ type: body.action, user, msgId: null }];
     default:
       return null;
@@ -413,9 +418,11 @@ function publicFile(urlPath, publicDir) {
   return file.startsWith(publicDir + path.sep) ? file : null;
 }
 
-export function createApp({ config, dbPath, configPath, publicDir = PUBLIC_DIR, loadConnector, fetchImpl, log = console }) {
+// ttsFetch: hàm tải giọng chị Google. Bỏ trống thì không đọc lời chào / cảm ơn (dùng trong test).
+export function createApp({ config, dbPath, configPath, publicDir = PUBLIC_DIR, loadConnector, fetchImpl, ttsFetch, log = console }) {
   const store = openStore(dbPath);
   const avatarDir = path.join(path.dirname(dbPath), 'avatars');
+  const ttsDir = path.join(path.dirname(dbPath), 'tts');
   const { tiktok: _tiktok, server: _server, ...publicConfig } = config; // Không gửi API key ra trình duyệt.
   let tiktokStatus = 'off';
   let botCount = 0;
@@ -463,11 +470,24 @@ export function createApp({ config, dbPath, configPath, publicDir = PUBLIC_DIR, 
     log,
     onSaved: (id, url) => game.setAvatarLocal(id, url),
   });
-  let audio = { bell: true, thunder: true, drum: true, bgm: true, voice: true, ...saved.meta.audio };
+  let audio = { bell: true, thunder: true, drum: true, bgm: true, voice: true, welcome: true, thanks: true, ...saved.meta.audio };
   const audioState = () => ({ audio, hasBgm: existsSync(path.join(publicDir, 'sounds', 'bgm.mp3')) });
+
+  const tts = ttsFetch ? createTts({ dir: ttsDir, fetchImpl: ttsFetch, log }) : null;
+  const announcer = createAnnouncer({
+    config,
+    isOn: (kind) => Boolean(tts && audio.voice && audio[kind]),
+    sessionKey: () => game.ctx.session.seq,
+    speak: (text, kind) => {
+      tts.get(text).then((file) => {
+        if (file) broadcast({ t: 'speak', kind, url: `tts/${file}` });
+      });
+    },
+  });
 
   const handleEvent = (event) => {
     broadcast({ t: 'event', event });
+    guarded(`giọng chào / cảm ơn ${event.type}`, () => announcer.handle(event));
     guarded(`xử lý sự kiện ${event.type}`, () => game.handleEvent(event));
     if (event.user?.avatar && game.player(event.user.id)) avatars.want(event.user.id, event.user.avatar);
   };
@@ -588,6 +608,19 @@ export function createApp({ config, dbPath, configPath, publicDir = PUBLIC_DIR, 
     }
   }
 
+  function serveTts(urlPath, res) {
+    const name = urlPath.slice('/tts/'.length);
+    if (!TTS_FILE.test(name)) return false;
+    try {
+      const content = readFileSync(path.join(ttsDir, name));
+      res.writeHead(200, { 'Content-Type': MIME['.mp3'], 'Cache-Control': 'max-age=86400' });
+      res.end(content);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async function onRequest(req, res) {
     const send = (status, text, type = 'text/plain; charset=utf-8') => {
       res.writeHead(status, { 'Content-Type': type });
@@ -611,6 +644,10 @@ export function createApp({ config, dbPath, configPath, publicDir = PUBLIC_DIR, 
     if (req.method !== 'GET') return send(405, 'Không hỗ trợ');
     if (urlPath.startsWith('/avatars/')) {
       if (!serveAvatar(urlPath, res)) send(404, 'Không tìm thấy');
+      return undefined;
+    }
+    if (urlPath.startsWith('/tts/')) {
+      if (!serveTts(urlPath, res)) send(404, 'Không tìm thấy');
       return undefined;
     }
     if (urlPath === '/api/sessions') return send(200, JSON.stringify(store.sessions()), MIME['.json']);
@@ -657,6 +694,7 @@ export function createApp({ config, dbPath, configPath, publicDir = PUBLIC_DIR, 
         started = false;
         timers.forEach(clearInterval);
         tiktok?.stop();
+        announcer.stop();
         save();
         store.close();
         for (const client of wss.clients) client.terminate();
@@ -683,6 +721,7 @@ if (import.meta.main) {
     config,
     configPath: path.join(ROOT, 'config.json'),
     dbPath: process.env.DB_PATH || path.join(ROOT, 'data', 'game.db'),
+    ttsFetch: fetch,
   });
 
   const quit = async (code) => {

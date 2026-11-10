@@ -287,6 +287,11 @@
             <button class="btn" id="sendShare">Chia sẻ</button>
             <button class="btn" id="sendFollow">Theo dõi</button>
           </div>
+          <h3>Vào phòng</h3>
+          <div class="row">
+            <button class="btn" id="sendMember">Giả lập vào phòng</button>
+          </div>
+          <p class="hint">Thử lời chào: mỗi tên chỉ được chào một lần mỗi phiên, cách nhau ít nhất 5 giây.</p>
         </div>
       </div>
     </section>
@@ -325,6 +330,12 @@
           <label class="check"><input type="checkbox" data-audio="bgm" checked> Nhạc nền</label>
           <label class="check"><input type="checkbox" data-audio="voice" checked> Giọng đọc</label>
         </div>
+        <h3>Giọng chị Google</h3>
+        <div class="row">
+          <label class="check"><input type="checkbox" data-audio="welcome" checked> Chào người vào phòng</label>
+          <label class="check"><input type="checkbox" data-audio="thanks" checked> Cảm ơn quà</label>
+        </div>
+        <p class="hint">Cần bật cả "Giọng đọc". Không chào người chơi ảo. Sửa câu chào / cảm ơn trong config.json, mục "announcer".</p>
         <h3>Nghe thử</h3>
         <div class="row">
           <button class="btn" data-test="bell">Thử chuông</button>
@@ -429,6 +440,7 @@
       case 'gift': return `${user.name} tặng ${giftName} (${diamonds} xu) x${repeatCount}${combo ? (repeatEnd ? ' [kết thúc combo]' : ' [đang combo]') : ''}`;
       case 'share': return `${user.name} chia sẻ`;
       case 'follow': return `${user.name} theo dõi`;
+      case 'member': return `${user.name} vào phòng`;
       default: return JSON.stringify({ type });
     }
   }
@@ -550,6 +562,7 @@
   $('sendLike').addEventListener('click', () => sim('like', { count: $('likes').value }));
   $('sendShare').addEventListener('click', () => sim('share'));
   $('sendFollow').addEventListener('click', () => sim('follow'));
+  $('sendMember').addEventListener('click', () => sim('member'));
   $('sendGift').addEventListener('click', () => sim('gift', { diamonds: $('giftCoins').value, count: $('giftCount').value, combo: $('giftCombo').checked }));
   $('pause').addEventListener('change', () => sim('pause', { on: $('pause').checked }));
   document.querySelectorAll('[data-action]').forEach((el) => {

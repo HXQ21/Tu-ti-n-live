@@ -443,8 +443,9 @@
   }
   addEventListener('pointerdown', unlockAudio);
 
-  // ---------- Giọng đọc (file mp3 trong sounds/voice) ----------
+  // ---------- Giọng đọc (file mp3 trong sounds/voice, và lời chào / cảm ơn máy chủ tạo trong tts/) ----------
   // Phát lần lượt từng câu, không chồng lên nhau; hàng chờ đầy thì bỏ câu mới.
+  // Mỗi phần tử: { src, kind } với kind là 'cue' (câu có sẵn), 'thanks' hoặc 'welcome'.
   const voiceQueue = [];
   let voicePlaying = false;
 
@@ -456,13 +457,13 @@
   }
 
   function nextVoice() {
-    const name = voiceQueue.shift();
-    if (!name) {
+    const item = voiceQueue.shift();
+    if (!item) {
       voicePlaying = false;
       return;
     }
     voicePlaying = true;
-    const clip = new Audio(`sounds/voice/${name}.mp3`);
+    const clip = new Audio(item.src);
     clip.volume = config.audio.volumes.voice ?? 1;
     clip.addEventListener('ended', nextVoice, { once: true });
     clip.addEventListener('error', nextVoice, { once: true });
@@ -477,7 +478,27 @@
     const name = typeof cue === 'string' ? pickVoice(cue, vars) : cue?.[Math.floor(Math.random() * cue.length)];
     if (!name) return;
     if (voiceQueue.length >= (config.audio.voiceMaxQueue ?? 3)) return;
-    voiceQueue.push(name);
+    voiceQueue.push({ src: `sounds/voice/${name}.mp3`, kind: 'cue' });
+    if (!voicePlaying) nextVoice();
+  }
+
+  // Lời chào / cảm ơn có tên người xem. Cảm ơn quà xếp trước các lời chào đang chờ;
+  // hàng chờ đầy thì bỏ bớt một lời chào để nhường chỗ cho lời cảm ơn.
+  function sayLine(src, kind) {
+    if (!audioConfig.voice) return;
+    const max = config.audio.voiceMaxQueue ?? 3;
+    if (kind === 'thanks') {
+      if (voiceQueue.length >= max) {
+        const welcomeAt = voiceQueue.findLastIndex((item) => item.kind === 'welcome');
+        if (welcomeAt === -1) return;
+        voiceQueue.splice(welcomeAt, 1);
+      }
+      const firstWelcome = voiceQueue.findIndex((item) => item.kind === 'welcome');
+      voiceQueue.splice(firstWelcome === -1 ? voiceQueue.length : firstWelcome, 0, { src, kind });
+    } else {
+      if (voiceQueue.length >= max) return;
+      voiceQueue.push({ src, kind });
+    }
     if (!voicePlaying) nextVoice();
   }
 
@@ -543,6 +564,7 @@
     setTimeout(updateHint, SOUND_HINT_DELAY_MS);
   });
   addEventListener('game-audio-test', ({ detail }) => play(detail, true));
+  addEventListener('game-speak', ({ detail }) => sayLine(detail.url, detail.kind));
 
   // ---------- Sự kiện game ----------
 

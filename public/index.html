@@ -1239,6 +1239,9 @@
         case 'audioTest':
           window.dispatchEvent(new CustomEvent('game-audio-test', { detail: message.kind }));
           break;
+        case 'speak':
+          if (config) window.dispatchEvent(new CustomEvent('game-speak', { detail: message }));
+          break;
         case 'state':
           render(message.state);
           break;

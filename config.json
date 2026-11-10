@@ -183,6 +183,14 @@
     }
   },
 
+  "announcer": {
+    "welcomeText": "Chào mừng đệ tử {name} đã đến với Tiên Môn Vấn Đạo",
+    "thanksText": "Cảm ơn đệ tử {name} đã cống hiến {count} {gift} cho tông môn",
+    "welcomeGapSec": 5,
+    "comboWaitSec": 3,
+    "giftNames": { "5655": "Hoa hồng", "5879": "Donut", "6369": "Sư tử" }
+  },
+
   "modules": {
     "vault": true, "events": true, "tribulation": true, "debate": true, "artifact": true,
     "beast": true, "wings": true, "duel": true, "alchemy": true, "ladder": true, "secret": true, "dao": true, "drops": true

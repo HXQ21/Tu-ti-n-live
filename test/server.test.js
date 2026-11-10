@@ -319,12 +319,12 @@ test('bật tắt âm thanh: phát tới giao diện, khởi động lại vẫn
   const { ws, messages } = openClient(port);
   await waitFor(() => messages.some((m) => m.t === 'hello'));
   const hello = messages.find((m) => m.t === 'hello');
-  assert.deepEqual(hello.audio, { bell: true, thunder: true, drum: true, bgm: true, voice: true });
+  assert.deepEqual(hello.audio, { bell: true, thunder: true, drum: true, bgm: true, voice: true, welcome: true, thanks: true });
   assert.equal(hello.hasBgm, false);
 
   assert.equal((await postSim(port, { action: 'audio', kind: 'bgm', on: false })).status, 200);
   await waitFor(() => messages.some((m) => m.t === 'audio'));
-  assert.deepEqual(messages.find((m) => m.t === 'audio').audio, { bell: true, thunder: true, drum: true, bgm: false, voice: true });
+  assert.deepEqual(messages.find((m) => m.t === 'audio').audio, { bell: true, thunder: true, drum: true, bgm: false, voice: true, welcome: true, thanks: true });
   assert.equal((await postSim(port, { action: 'audio', kind: 'xoa-het', on: false })).status, 400);
 
   assert.equal((await postSim(port, { action: 'audioTest', kind: 'thunder' })).status, 200);
@@ -341,7 +341,7 @@ test('bật tắt âm thanh: phát tới giao diện, khởi động lại vẫn
   const second = openClient(portAgain);
   await waitFor(() => second.messages.some((m) => m.t === 'hello'));
   const helloAgain = second.messages.find((m) => m.t === 'hello');
-  assert.deepEqual(helloAgain.audio, { bell: true, thunder: true, drum: true, bgm: false, voice: true });
+  assert.deepEqual(helloAgain.audio, { bell: true, thunder: true, drum: true, bgm: false, voice: true, welcome: true, thanks: true });
   assert.equal(helloAgain.hasBgm, true);
   second.ws.terminate();
   await again.stop();
@@ -388,6 +388,50 @@ test('trùng cổng: báo lỗi EADDRINUSE để hiện thông báo dễ hiểu,
   await assert.rejects(second.start(port), { code: 'EADDRINUSE' });
   await second.stop();
   await first.stop();
+});
+
+test('người xem vào phòng từ TikTok được chuẩn hóa thành sự kiện member', () => {
+  assert.deepEqual(normalizeTikTokEvent('member', { user, common: { msgId: 'v1' } }), {
+    type: 'member',
+    user: { id: BIG_ID, name: 'Lâm Động', avatar: 'http://a/b.jpg' },
+    msgId: 'v1',
+  });
+});
+
+test('giọng chào và cảm ơn: phát tới màn LIVE, không chào người ảo, tắt công tắc thì im', async () => {
+  const dbPath = path.join(dir, 'game.db');
+  const asked = [];
+  const ttsFetch = async (url) => {
+    asked.push(new URL(url).searchParams.get('q'));
+    return new Response(Buffer.from('MP3DATA'), { headers: { 'content-type': 'audio/mpeg' } });
+  };
+  const app = createApp({ config, dbPath, ttsFetch, log: quiet });
+  const port = await app.start(0);
+  const { ws, messages } = openClient(port);
+  await waitFor(() => messages.some((m) => m.t === 'hello'));
+
+  await postSim(port, { action: 'bots' });
+  await postSim(port, { action: 'member', name: 'Minh' });
+  await waitFor(() => messages.some((m) => m.t === 'speak'));
+  const welcome = messages.find((m) => m.t === 'speak');
+  assert.equal(welcome.kind, 'welcome');
+  assert.deepEqual(asked, ['Chào mừng đệ tử Minh đã đến với Tiên Môn Vấn Đạo']);
+  const res = await fetch(`http://127.0.0.1:${port}/${welcome.url}`);
+  assert.equal(res.headers.get('content-type'), 'audio/mpeg');
+  assert.equal(await res.text(), 'MP3DATA');
+  assert.equal((await fetch(`http://127.0.0.1:${port}/tts/..%2Fgame.db`)).status, 404);
+
+  await postSim(port, { action: 'gift', name: 'Minh', diamonds: 1, count: 20, combo: true });
+  await waitFor(() => messages.filter((m) => m.t === 'speak').length === 2);
+  assert.equal(asked[1], 'Cảm ơn đệ tử Minh đã cống hiến 20 Hoa hồng cho tông môn');
+
+  await postSim(port, { action: 'audio', kind: 'thanks', on: false });
+  await postSim(port, { action: 'gift', name: 'Lan', diamonds: 5, count: 1 });
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  assert.equal(asked.length, 2);
+
+  ws.terminate();
+  await app.stop();
 });
 
 test('API giả lập từ chối yêu cầu sai', async () => {
